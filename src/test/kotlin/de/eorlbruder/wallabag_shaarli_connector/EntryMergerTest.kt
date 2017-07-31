@@ -1,8 +1,9 @@
 package de.eorlbruder.wallabag_shaarli_connector
 
+import de.eorlbruder.wallabag_shaarli_connector.core.Entry
+import de.eorlbruder.wallabag_shaarli_connector.core.EntryMerger
+import org.junit.Assert.assertTrue
 import org.junit.Test
-
-import org.junit.Assert.*
 
 class EntryMergerTest {
 

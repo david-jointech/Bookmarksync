@@ -1,6 +1,6 @@
 package de.eorlbruder.wallabag_shaarli_connector.utils
 
-import de.eorlbruder.wallabag_shaarli_connector.Constants
+import de.eorlbruder.wallabag_shaarli_connector.core.Constants
 import khttp.responses.Response
 
 class ResponseUtils {

@@ -1,6 +1,9 @@
-package de.eorlbruder.wallabag_shaarli_connector
+package de.eorlbruder.wallabag_shaarli_connector.core
 
-import com.natpryce.konfig.*
+import com.natpryce.konfig.ConfigurationProperties
+import com.natpryce.konfig.PropertyGroup
+import com.natpryce.konfig.getValue
+import com.natpryce.konfig.stringType
 
 class Sysconfig {
 

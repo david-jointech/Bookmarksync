@@ -1,4 +1,4 @@
-package de.eorlbruder.wallabag_shaarli_connector
+package de.eorlbruder.wallabag_shaarli_connector.core
 
 import mu.KLogging
 

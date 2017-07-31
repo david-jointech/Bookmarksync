@@ -1,9 +1,9 @@
 package de.eorlbruder.wallabag_shaarli_connector.wallabag
 
-import de.eorlbruder.wallabag_shaarli_connector.Connector
-import de.eorlbruder.wallabag_shaarli_connector.Entry
-import de.eorlbruder.wallabag_shaarli_connector.Constants
-import de.eorlbruder.wallabag_shaarli_connector.Sysconfig
+import de.eorlbruder.wallabag_shaarli_connector.core.Connector
+import de.eorlbruder.wallabag_shaarli_connector.core.Constants
+import de.eorlbruder.wallabag_shaarli_connector.core.Entry
+import de.eorlbruder.wallabag_shaarli_connector.core.Sysconfig
 import de.eorlbruder.wallabag_shaarli_connector.utils.ResponseUtils
 import khttp.get
 import mu.KLogging
@@ -11,7 +11,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
 
-class WallabagConnector : Connector {
+class WallabagConnector(val isSource: Boolean) : Connector {
 
     companion object : KLogging()
 
@@ -84,4 +84,5 @@ class WallabagConnector : Connector {
         return result
     }
 
+    override fun getName(): String = "Wallabag"
 }

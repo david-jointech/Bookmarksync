@@ -1,9 +1,9 @@
 package de.eorlbruder.wallabag_shaarli_connector.shaarli
 
-import de.eorlbruder.wallabag_shaarli_connector.Connector
-import de.eorlbruder.wallabag_shaarli_connector.Constants
-import de.eorlbruder.wallabag_shaarli_connector.Entry
-import de.eorlbruder.wallabag_shaarli_connector.Sysconfig
+import de.eorlbruder.wallabag_shaarli_connector.core.Connector
+import de.eorlbruder.wallabag_shaarli_connector.core.Constants
+import de.eorlbruder.wallabag_shaarli_connector.core.Entry
+import de.eorlbruder.wallabag_shaarli_connector.core.Sysconfig
 import de.eorlbruder.wallabag_shaarli_connector.utils.ResponseUtils
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -16,7 +16,7 @@ import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ShaarliConnector : Connector {
+class ShaarliConnector(val isSource: Boolean) : Connector {
 
     companion object : KLogging()
 
@@ -47,7 +47,11 @@ class ShaarliConnector : Connector {
         val title = entry.get("title") as String
         val url = entry.get("url") as String
         val tags = extractTags(entry.get("tags") as JSONArray)
-        list.add(Entry(title, url, tags, id))
+        if (isSource) {
+            list.add(Entry(title, url, tags))
+        } else {
+            list.add(Entry(title, url, tags, id))
+        }
     }
 
     private fun extractTags(tags: JSONArray): HashSet<String> {
@@ -119,4 +123,6 @@ class ShaarliConnector : Connector {
         val response = put(getEntriesUrl() + "/$id", headers = getAuthHeader(), json = json)
         logger.debug(response.text)
     }
+
+    override fun getName(): String = "Shaarli"
 }
