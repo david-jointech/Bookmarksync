@@ -1,0 +1,8 @@
+wallabag.url=myurl
+wallabag.username=myusername
+wallabag.password=mypassword
+wallabag.client_id=myclientid
+wallabag.client_secret=myclientsecret
+
+shaarli.url=myurl
+shaarli.secret=mysecret

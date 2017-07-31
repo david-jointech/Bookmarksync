@@ -1,0 +1,31 @@
+### direct log messages to stdout ###
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target=System.out
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%p [%t] %c %x - %m%n
+
+### direct messages to file connector.log ###
+log4j.appender.file=org.apache.log4j.FileAppender
+log4j.appender.file.File=connector.log
+log4j.appender.file.layout=org.apache.log4j.PatternLayout
+log4j.appender.file.layout.ConversionPattern=%p [%t] %c %x - %m%n
+### Korrekte Darstellung von Sonderzeichen auch beim Start von WAVE ueber Tomcat
+log4j.appender.file.encoding=UTF-8
+
+### set log levels - for more verbose logging change 'info' to 'debug' ###
+
+### Kein Appender am rootLogger, damit wir reine File-Logger erzeugen können				###
+log4j.rootLogger=warn
+
+### Damit trotzdem standardmäßig in die Konsole geschrieben wird, legen wir	   				###
+### für alle möglichen Toplevel-Namen die Konsole als Appender fest							###
+log4j.logger.org=warn,stdout,file
+log4j.logger.com=warn,stdout,file
+log4j.logger.de=warn,stdout,file
+log4j.logger.mu=warn,stdout,file
+log4j.logger.io=warn,stdout,file
+log4j.logger.khttp=warn,stdout,file
+
+## Standardmäßig alles ausgeben
+log4j.logger.de.eorlbruder=info
+
