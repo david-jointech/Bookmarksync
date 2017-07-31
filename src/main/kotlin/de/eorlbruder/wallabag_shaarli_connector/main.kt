@@ -2,7 +2,6 @@ package de.eorlbruder.wallabag_shaarli_connector
 
 import de.eorlbruder.wallabag_shaarli_connector.shaarli.ShaarliConnector
 import de.eorlbruder.wallabag_shaarli_connector.wallabag.WallabagConnector
-import mu.KotlinLogging
 
 fun main(args: Array<String>) {
     val wallabag : Connector = WallabagConnector()
