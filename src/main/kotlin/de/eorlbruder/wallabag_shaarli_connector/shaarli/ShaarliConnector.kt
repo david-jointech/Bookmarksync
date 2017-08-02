@@ -48,9 +48,9 @@ class ShaarliConnector(val isSource: Boolean) : Connector {
         val url = entry.get("url") as String
         val tags = extractTags(entry.get("tags") as JSONArray)
         if (isSource) {
-            list.add(Entry(title, url, tags))
+            list.add(Entry(title, tags, url = url))
         } else {
-            list.add(Entry(title, url, tags, id))
+            list.add(Entry(title, tags, url = url, id = id))
         }
     }
 

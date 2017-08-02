@@ -13,7 +13,10 @@ class EntryMerger(val sourceEntries: List<Entry>, val targetEntries: List<Entry>
     }
 
     private fun mergeEntry(entry: Entry, result: ArrayList<Entry>) {
-        val targetEntry: Entry? = targetEntries.find { equalUrls(it.url, entry.url) }
+        val targetEntry: Entry? = targetEntries.find {
+            (((it.url == "" || entry.url == "") && it.title == entry.title)
+                    || equalUrls(it.url, entry.url))
+        }
         if (targetEntry == null) {
             logger.debug("Entry with URL ${entry.url} not found in Shaarli, creating new Entry")
             result.add(entry)

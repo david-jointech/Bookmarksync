@@ -49,7 +49,7 @@ class WallabagConnector(val isSource: Boolean) : Connector {
         if (it.get("is_starred") == 1) {
             tags.add("Starred")
         }
-        list.add(Entry(title, url, tags))
+        list.add(Entry(title, tags, url = url))
     }
 
     private fun extractTags(tags: JSONArray): HashSet<String> {
@@ -77,8 +77,8 @@ class WallabagConnector(val isSource: Boolean) : Connector {
 
     private fun getAuthorizationUrl() : String {
         var result = config.WALLABAG_URL + Constants.WALLABAG_AUTH_ENDPOINT + Constants.WALLABAG_GRANT_TYPE
-        result += Constants.WALLABAG_CLIENT_ID_KEY + config.WALLABAG_CLIENTID
-        result += Constants.WALLABAG_CLIENT_SECRET_KEY + config.WALLABAG_CLIENTSECRET
+        result += Constants.WALLABAG_CLIENT_ID_KEY + config.WALLABAG_CLIENT_ID
+        result += Constants.WALLABAG_CLIENT_SECRET_KEY + config.WALLABAG_CLIENT_SECRET
         result += Constants.WALLABAG_USERNAME_KEY + config.WALLABAG_USERNAME
         result += Constants.WALLABAG_PASSWORD_KEY + config.WALLABAG_PASSWORD
         return result

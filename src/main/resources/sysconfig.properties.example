@@ -1,8 +1,13 @@
 wallabag.url=myurl
 wallabag.username=myusername
 wallabag.password=mypassword
-wallabag.client_id=myclientid
-wallabag.client_secret=myclientsecret
+wallabag.clientid=myclientid
+wallabag.clientsecret=myclientsecret
 
 shaarli.url=myurl
 shaarli.secret=mysecret
+standardnotes.url=myurl
+standardnotes.email=myemail
+standardnotes.serverkey=sk
+standardnotes.masterkey=mk
+standardnotes.authkey=ak

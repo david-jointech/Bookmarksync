@@ -33,6 +33,8 @@ dependencies {
     compile 'io.github.microutils:kotlin-logging:1.4.6'
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
     compile 'com.natpryce:konfig:1.6.1.0'
+    compile 'commons-codec:commons-codec:1.8'
+
 }
 
 compileKotlin {
