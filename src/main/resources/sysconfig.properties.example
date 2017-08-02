@@ -3,7 +3,6 @@ wallabag.username=myusername
 wallabag.password=mypassword
 wallabag.clientid=myclientid
 wallabag.clientsecret=myclientsecret
-
 shaarli.url=myurl
 shaarli.secret=mysecret
 standardnotes.url=myurl
