@@ -5,7 +5,7 @@ import de.eorlbruder.wallabag_shaarli_connector.core.Entry
 import de.eorlbruder.wallabag_shaarli_connector.core.Sysconfig
 import de.eorlbruder.wallabag_shaarli_connector.utils.ResponseUtils
 import de.eorlbruder.wallabag_shaarli_connector.wallabag.WallabagConnector
-import de.eorlbruder.wallbag_shaarli_connector.standardnotes.ContentDecryptor
+import de.eorlbruder.wallbag_shaarli_connector.standardnotes.EntryDecrypter
 import khttp.post
 import mu.KLogging
 import org.json.JSONArray
@@ -88,17 +88,17 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
     }
 
     fun decryptWithV001(encryptedEntry: String, authHash: String): String {
-        return ContentDecryptor.decryptV001(encryptedEntry, config.STANDARDNOTES_AUTH_KEY,
+        return EntryDecrypter.decryptV001(encryptedEntry, config.STANDARDNOTES_AUTH_KEY,
                 config.STANDARDNOTES_MASTER_KEY, authHash)
     }
 
     fun decryptWithV002(encryptedEntry: String, uuid: String): String {
-        return ContentDecryptor.decryptV002(encryptedEntry, config.STANDARDNOTES_AUTH_KEY,
+        return EntryDecrypter.decryptV002(encryptedEntry, config.STANDARDNOTES_AUTH_KEY,
                 config.STANDARDNOTES_MASTER_KEY, uuid)
     }
 
     fun decryptWithV000(encryptedEntry: String): String {
-        return ContentDecryptor.decryptV000(encryptedEntry)
+        return EntryDecrypter.decryptV000(encryptedEntry)
     }
 
     override fun getAccessToken(): String {

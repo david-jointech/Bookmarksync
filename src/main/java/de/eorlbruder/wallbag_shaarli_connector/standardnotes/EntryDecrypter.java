@@ -9,7 +9,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
-public class ContentDecryptor {
+public class EntryDecrypter {
 
     private static final String AES_CBC_PKCS5_PADDING = "AES/CBC/PKCS5Padding";
     private static final String AES = "AES";
