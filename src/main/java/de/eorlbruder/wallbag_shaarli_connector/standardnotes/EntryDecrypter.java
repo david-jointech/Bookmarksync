@@ -28,10 +28,11 @@ public class EntryDecrypter {
         String stringToAuth = "002" + ":" + contentUuid + ":" + ivHex + ":" + cipherText;
 
         if (!contentUuid.equals(uuid)) {
-            throw new Exception("Could not authenticate item, mismatching uuid");
+            throw new Exception("Could not authenticate item uuid " + contentUuid + "doesn't mathc" +
+                    uuid);
         }
 
-        // authenticate
+
         String hash = createHash(stringToAuth, ak);
         if (!hash.equals(authHash)) {
             throw new Exception("could not authenticate item with hash " + hash + " against hash "

@@ -7,6 +7,7 @@ import khttp.get
 import khttp.post
 import khttp.structures.authorization.BasicAuthorization
 import mu.KLogging
+import org.json.JSONArray
 import org.json.JSONObject
 
 class RedditConnector(val isSource: Boolean) : Connector {
@@ -20,9 +21,27 @@ class RedditConnector(val isSource: Boolean) : Connector {
         headers.put("User-Agent", "WallabagShaarliConnector/0.1 by EorlBruder")
         val response = get("${config.REDDIT_OAUTHURL}user/${config.REDDIT_USERNAME}/saved",
                 headers = headers)
-        logger.debug(response.text)
-        return ArrayList<Entry>()
+        // TODO Listing stuff! https://www.reddit.com/dev/api#listings
+        val responseJson = JSONObject(response.text)
+        return pruneEntries(responseJson)
     }
+
+    fun pruneEntries(json: JSONObject): List<Entry> {
+        val result: List<Entry> = ArrayList<Entry>()
+        val allData = json.get("data") as JSONObject
+        val dataArray = allData.get("children") as JSONArray
+        dataArray.forEach {
+            val data = (it as JSONObject).get("data") as JSONObject
+            val tags = ArrayList<String>()
+            tags.add(getName())
+            logger.debug(data.toString())
+            // TODO get the specs of the returned data, else this will get really tedious
+            val url = data.get("link_permalink") as String
+            val title = data.get("link_title") as String
+        }
+        return result
+    }
+
 
     override fun getAccessToken(): String {
         val params = HashMap<String, String>()
@@ -36,7 +55,6 @@ class RedditConnector(val isSource: Boolean) : Connector {
         val json = JSONObject(response.text)
         return json.get("access_token") as String
     }
-
     override fun writeAllEntries(entries: List<Entry>) {
         throw NotImplementedError("Using reddit-saved as an archived for other links doesn't seem to " +
                 "make that much sense")

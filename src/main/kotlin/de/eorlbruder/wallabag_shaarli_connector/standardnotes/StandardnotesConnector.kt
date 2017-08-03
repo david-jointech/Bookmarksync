@@ -28,7 +28,6 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
         var response = post(config.STANDARDNOTES_URL + "items/sync",
                 headers = headers,
                 data = jsonRequestData.toString())
-        logger.debug(response.text)
         val result = java.util.ArrayList<Entry>()
         WallabagConnector.logger.debug("Processing Page with Status Code ${response.statusCode}")
         while (ResponseUtils.isSuccessfulStatusCode(response)) {
@@ -55,50 +54,46 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
                 val contentType = it.get("content_type") as String
                 val deleted = it.get("deleted") as Boolean
                 if (contentType == "Note" && !deleted) {
-                    logger.debug(it.toString())
-                    val authHash = it.get("auth_hash")
-                    val uuid = it.get("uuid") as String
-                    val content = it.get("content") as String
-                    if (authHash is String) {
-                        decrypt(content, authHash = authHash)
-                    } else {
-                        decrypt(content, uuid = uuid)
+                    var authHash = it.get("auth_hash")
+                    if (authHash !is String) {
+                        authHash = ""
                     }
+                    val uuid = it.get("uuid") as String
+                    val encItemKey = it.get("enc_item_key")
+                    var ak = ""
+                    var mk = ""
+                    if (encItemKey is String) {
+                        val decryptedKey = decrypt(encItemKey, uuid = uuid,
+                                ak = config.STANDARDNOTES_AUTH_KEY,
+                                mk = config.STANDARDNOTES_MASTER_KEY, authHash = authHash)
+                        mk = decryptedKey.substring(0, decryptedKey.length / 2)
+                        ak = decryptedKey.substring(decryptedKey.length / 2, decryptedKey.length)
+                    }
+                    val content = it.get("content") as String
+                    val decryptedContent = decrypt(content, uuid = uuid, ak = ak, mk = mk,
+                            authHash = authHash as String)
                     val description = ""
                     val title = ""
                     val tags = HashSet<String>()
                     tags.add(getName())
                     result.add(Entry(title, tags, description = description))
-                    logger.debug("Added Entry with Content $content")
+                    logger.debug("Added Entry with Content $decryptedContent")
                 }
             }
         }
         return result
     }
 
-    fun decrypt(encryptedEntry: String, authHash: String = "", uuid: String = ""): String {
+    fun decrypt(encryptedEntry: String, authHash: String = "", uuid: String = "", ak: String = "", mk: String = ""): String {
         if (encryptedEntry.substring(0..2) == "002") {
-            return decryptWithV002(encryptedEntry, uuid)
+            return EntryDecrypter.decryptV002(encryptedEntry, ak, mk, uuid)
         } else if (encryptedEntry.substring(0..2) == "001") {
-            return decryptWithV001(encryptedEntry, authHash)
+            return EntryDecrypter.decryptV001(encryptedEntry, config.STANDARDNOTES_AUTH_KEY,
+                    config.STANDARDNOTES_MASTER_KEY, authHash)
         } else if (encryptedEntry.substring(0..2) == "000") {
-            return decryptWithV000(encryptedEntry)
+            return EntryDecrypter.decryptV000(encryptedEntry)
         }
         throw NoSuchAlgorithmException()
-    }
-
-    fun decryptWithV001(encryptedEntry: String, authHash: String): String {
-        return EntryDecrypter.decryptV001(encryptedEntry, config.STANDARDNOTES_AUTH_KEY,
-                config.STANDARDNOTES_MASTER_KEY, authHash)
-    }
-
-    fun decryptWithV002(encryptedEntry: String, uuid: String): String {
-        return EntryDecrypter.decryptV002(encryptedEntry, config.STANDARDNOTES_AUTH_KEY,
-                config.STANDARDNOTES_MASTER_KEY, uuid)
-    }
-
-    fun decryptWithV000(encryptedEntry: String): String {
-        return EntryDecrypter.decryptV000(encryptedEntry)
     }
 
     override fun getAccessToken(): String {
