@@ -88,20 +88,17 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
     }
 
     fun decryptWithV001(encryptedEntry: String, authHash: String): String {
-        val result = ContentDecryptor.decryptV001(encryptedEntry, config.STANDARDNOTES_AUTH_KEY,
+        return ContentDecryptor.decryptV001(encryptedEntry, config.STANDARDNOTES_AUTH_KEY,
                 config.STANDARDNOTES_MASTER_KEY, authHash)
-        return result
     }
 
     fun decryptWithV002(encryptedEntry: String, uuid: String): String {
-        val result = ContentDecryptor.decryptV002(encryptedEntry, config.STANDARDNOTES_AUTH_KEY,
+        return ContentDecryptor.decryptV002(encryptedEntry, config.STANDARDNOTES_AUTH_KEY,
                 config.STANDARDNOTES_MASTER_KEY, uuid)
-        return encryptedEntry
     }
 
     fun decryptWithV000(encryptedEntry: String): String {
-        val result = ContentDecryptor.decryptV000(encryptedEntry)
-        return encryptedEntry
+        return ContentDecryptor.decryptV000(encryptedEntry)
     }
 
     override fun getAccessToken(): String {
