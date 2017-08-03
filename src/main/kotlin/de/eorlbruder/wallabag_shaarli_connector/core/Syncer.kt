@@ -9,7 +9,7 @@ class Syncer(val sourceConnector: Connector, val targetConnector: Connector) {
     fun sync() {
         logger.info("Syncing entries from ${sourceConnector.name} to ${targetConnector.name}")
         EntryMerger(sourceConnector, targetConnector).mergeEntries()
-        targetConnector.write()
+        targetConnector.write(sourceConnector.name)
     }
 
 }

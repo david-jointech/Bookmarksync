@@ -1,6 +1,7 @@
 package de.eorlbruder.wallabag_shaarli_connector.reddit
 
 import de.eorlbruder.wallabag_shaarli_connector.core.Connector
+import de.eorlbruder.wallabag_shaarli_connector.core.ConnectorTypes
 import de.eorlbruder.wallabag_shaarli_connector.core.Entry
 import de.eorlbruder.wallabag_shaarli_connector.core.Sysconfig
 import khttp.get
@@ -10,7 +11,7 @@ import mu.KLogging
 import org.json.JSONArray
 import org.json.JSONObject
 
-class RedditConnector(isSource: Boolean) : Connector(isSource) {
+class RedditConnector : Connector() {
 
     companion object : KLogging()
 
@@ -24,6 +25,7 @@ class RedditConnector(isSource: Boolean) : Connector(isSource) {
         // TODO Listing stuff! https://www.reddit.com/dev/api#listings
         val responseJson = JSONObject(response.text)
         pruneEntries(responseJson)
+        entries.reverse()
     }
 
     fun pruneEntries(json: JSONObject) {
@@ -54,10 +56,10 @@ class RedditConnector(isSource: Boolean) : Connector(isSource) {
         return json.get("access_token") as String
     }
 
-    override fun writeEntry(entry: Entry) {
+    override fun writeEntry(entry: Entry, source: String) {
         throw NotImplementedError("Using reddit-saved as an archived for other links doesn't seem to " +
                 "make that much sense")
     }
 
-    override val name: String = "Reddit"
+    override val name: String = ConnectorTypes.REDDIT.value
 }

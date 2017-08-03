@@ -14,8 +14,6 @@ class Constants {
         val WALLABAG_PASSWORD_KEY = "&password="
         val WALLABAG_ACCESS_TOKEN = "access_token"
 
-        val WALLABAG_TAG = "Wallabag"
-
         val SHAARLI_API_ENDPOINT = "api/v1/"
         val SHAARLI_ENTRIES = "links"
         val SHAARLI_LIMIT_KEY = "?limit="

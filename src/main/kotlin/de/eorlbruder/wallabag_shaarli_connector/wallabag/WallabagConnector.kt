@@ -1,9 +1,6 @@
 package de.eorlbruder.wallabag_shaarli_connector.wallabag
 
-import de.eorlbruder.wallabag_shaarli_connector.core.Connector
-import de.eorlbruder.wallabag_shaarli_connector.core.Constants
-import de.eorlbruder.wallabag_shaarli_connector.core.Entry
-import de.eorlbruder.wallabag_shaarli_connector.core.Sysconfig
+import de.eorlbruder.wallabag_shaarli_connector.core.*
 import de.eorlbruder.wallabag_shaarli_connector.core.utils.ResponseUtils
 import khttp.get
 import mu.KLogging
@@ -11,7 +8,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
 
-class WallabagConnector(isSource: Boolean) : Connector(isSource) {
+class WallabagConnector : Connector() {
 
     companion object : KLogging()
 
@@ -29,6 +26,7 @@ class WallabagConnector(isSource: Boolean) : Connector(isSource) {
             response = get(getEntriesUrlForPage(++i), headers = getAuthHeader())
             logger.debug("Processing Page $i with Status Code ${response.statusCode}")
         }
+        entries.reverse()
     }
 
 
@@ -42,15 +40,15 @@ class WallabagConnector(isSource: Boolean) : Connector(isSource) {
         val title = it.get("title") as String
         val url = it.get("url") as String
         val tags = extractTags(it.get("tags") as JSONArray)
+        val id = it.get("id") as Int
         if (it.get("is_starred") == 1) {
             tags.add("Starred")
         }
-        entries.add(Entry(title, tags, url = url))
+        entries.add(Entry(title, tags, id.toString(), url = url))
     }
 
     private fun extractTags(tags: JSONArray): HashSet<String> {
         val result = HashSet<String>()
-        result.add(Constants.WALLABAG_TAG)
         tags.forEach({ addTag(result, it as JSONObject) })
         return result
     }
@@ -68,7 +66,7 @@ class WallabagConnector(isSource: Boolean) : Connector(isSource) {
         throw Exception()
     }
 
-    override fun writeEntry(entry: Entry) = throw NotImplementedError("A write isn't implemented for Wallabag yet")
+    override fun writeEntry(entry: Entry, source: String) = throw NotImplementedError("A write isn't implemented for Wallabag yet")
     private fun getEntriesUrlForPage(i: Int) = config.WALLABAG_URL + Constants.WALLABAG_API_ENDPOINT + Constants.WALLABAG_ENTRIES + Constants.WALLABAG_PAGE_KEY + i
 
     private fun getAuthorizationUrl() : String {
@@ -80,5 +78,5 @@ class WallabagConnector(isSource: Boolean) : Connector(isSource) {
         return result
     }
 
-    override val name: String = "Wallabag"
+    override val name: String = ConnectorTypes.WALLABAG.value
 }

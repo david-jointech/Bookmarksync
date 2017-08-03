@@ -1,9 +1,6 @@
 package de.eorlbruder.wallabag_shaarli_connector.shaarli
 
-import de.eorlbruder.wallabag_shaarli_connector.core.Connector
-import de.eorlbruder.wallabag_shaarli_connector.core.Constants
-import de.eorlbruder.wallabag_shaarli_connector.core.Entry
-import de.eorlbruder.wallabag_shaarli_connector.core.Sysconfig
+import de.eorlbruder.wallabag_shaarli_connector.core.*
 import de.eorlbruder.wallabag_shaarli_connector.core.utils.ResponseUtils
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -15,7 +12,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
 
-class ShaarliConnector(isSource: Boolean) : Connector(isSource) {
+class ShaarliConnector : Connector() {
 
     companion object : KLogging()
 
@@ -37,6 +34,7 @@ class ShaarliConnector(isSource: Boolean) : Connector(isSource) {
             response = get(getEntriesUrlForOffset(offset), headers = getAuthHeader())
             logger.debug("Processing Page on $offset with Status Code ${response.statusCode}")
         }
+        entries.reverse()
     }
 
     private fun pruneEntry(entry: JSONObject) {
@@ -44,11 +42,7 @@ class ShaarliConnector(isSource: Boolean) : Connector(isSource) {
         val title = entry.get("title") as String
         val url = entry.get("url") as String
         val tags = extractTags(entry.get("tags") as JSONArray)
-        if (isSource) {
-            entries.add(Entry(title, tags, url = url))
-        } else {
-            entries.add(Entry(title, tags, url = url, id = id))
-        }
+        entries.add(Entry(title, tags, id.toString(), url = url))
     }
 
     private fun extractTags(tags: JSONArray): HashSet<String> {
@@ -62,7 +56,6 @@ class ShaarliConnector(isSource: Boolean) : Connector(isSource) {
         var result = getEntriesUrl()
         result += Constants.SHAARLI_LIMIT_KEY + Constants.SHAARLI_LIMIT
         result += Constants.SHAARLI_OFFSET_KEY + offset
-        result += Constants.SHAARLI_SEARCHTAGS_KEY + Constants.WALLABAG_TAG
         return result
     }
 
@@ -83,9 +76,9 @@ class ShaarliConnector(isSource: Boolean) : Connector(isSource) {
         return token
     }
 
-    override fun writeEntry(entry: Entry) {
-        val json: JSONObject = jsonObjectFromEntry(entry)
-        if (entry.id == -1) {
+    override fun writeEntry(entry: Entry, source: String) {
+        val json: JSONObject = jsonObjectFromEntry(entry, source)
+        if (entry.id == "no_id") {
             logger.info("Creating new Entry with URL ${entry.url} in Shaarli")
             createEntry(json)
         } else {
@@ -99,22 +92,23 @@ class ShaarliConnector(isSource: Boolean) : Connector(isSource) {
         logger.debug(response.text)
     }
 
-    private fun jsonObjectFromEntry(entry: Entry): JSONObject {
+    private fun jsonObjectFromEntry(entry: Entry, source: String): JSONObject {
         val json: JSONObject = JSONObject()
         json.put("url", entry.url)
         json.put("title", entry.title)
-        json.put("description", "")
+        json.put("description", entry.description)
         val tags: JSONArray = JSONArray()
+        tags.put(source)
         entry.tags.forEach({ tags.put(it) })
         json.put("tags", tags)
         json.put("private", true)
         return json
     }
 
-    private fun updateEntry(json: JSONObject, id: Int) {
-        val response = put(getEntriesUrl() + "/$id", headers = getAuthHeader(), json = json)
+    private fun updateEntry(json: JSONObject, id: String) {
+        val response = put(getEntriesUrl() + "/${Integer.parseInt(id)}", headers = getAuthHeader(), json = json)
         logger.debug(response.text)
     }
 
-    override val name: String = "Shaarli"
+    override val name: String = ConnectorTypes.SHAARLI.value
 }

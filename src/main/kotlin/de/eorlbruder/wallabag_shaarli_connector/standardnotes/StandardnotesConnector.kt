@@ -1,6 +1,7 @@
 package de.eorlbruder.wallabag_shaarli_connector.standardnotes
 
 import de.eorlbruder.wallabag_shaarli_connector.core.Connector
+import de.eorlbruder.wallabag_shaarli_connector.core.ConnectorTypes
 import de.eorlbruder.wallabag_shaarli_connector.core.Entry
 import de.eorlbruder.wallabag_shaarli_connector.core.Sysconfig
 import de.eorlbruder.wallabag_shaarli_connector.core.utils.ResponseUtils
@@ -13,7 +14,7 @@ import org.json.JSONObject
 import java.security.NoSuchAlgorithmException
 
 
-class StandardnotesConnector(isSource: Boolean) : Connector(isSource) {
+class StandardnotesConnector : Connector() {
 
     companion object : KLogging()
 
@@ -42,6 +43,7 @@ class StandardnotesConnector(isSource: Boolean) : Connector(isSource) {
                     data = jsonRequestData.toString())
             WallabagConnector.logger.debug("Processing Page with Status Code ${response.statusCode}")
         }
+        entries.reverse()
     }
 
     fun pruneAndExtractEntries(json: JSONObject) {
@@ -72,7 +74,9 @@ class StandardnotesConnector(isSource: Boolean) : Connector(isSource) {
                     val decryptedContent = decrypt(content, uuid = uuid, ak = ak, mk = mk,
                             authHash = authHash)
                     if (contentType == "Note") {
-                        decryptedNotes.add(JSONObject(decryptedContent))
+                        val noteJson = JSONObject(decryptedContent)
+                        noteJson.put("uuid", uuid)
+                        decryptedNotes.add(noteJson)
                     } else {
                         val tagJson = JSONObject(decryptedContent)
                         val tagTitle = tagJson.get("title") as String
@@ -84,22 +88,27 @@ class StandardnotesConnector(isSource: Boolean) : Connector(isSource) {
         decryptedNotes.forEach {
             val title = it.get("title") as String
             val description = it.get("text") as String
-            val tags = HashSet<String>()
-            tags.add(name)
-            val references = it.get("references") as JSONArray
-            references.forEach {
-                val contentType = (it as JSONObject).get("content_type")
-                if (contentType == "Tag") {
-                    val tagUuid = it.get("uuid") as String
-                    val tag = decryptedTags.get(tagUuid)
-                    if (tag != null)
-                        tags.add(tag)
-                }
-            }
-            val entry = Entry(title, tags, description = description)
+            val id = it.get("uuid") as String
+            val tags = extractTags(it, decryptedTags)
+            val entry = Entry(title, tags, id, description = description)
             entries.add(entry)
             logger.debug("Added entry with title ${entry.title}")
         }
+    }
+
+    private fun extractTags(it: JSONObject, decryptedTags: HashMap<String, String>): HashSet<String> {
+        val tags = HashSet<String>()
+        val references = it.get("references") as JSONArray
+        references.forEach {
+            val contentType = (it as JSONObject).get("content_type")
+            if (contentType == "Tag") {
+                val tagUuid = it.get("uuid") as String
+                val tag = decryptedTags.get(tagUuid)
+                if (tag != null)
+                    tags.add(tag)
+            }
+        }
+        return tags
     }
 
     fun decrypt(encryptedEntry: String, authHash: String = "", uuid: String = "", ak: String = "", mk: String = ""): String {
@@ -123,7 +132,7 @@ class StandardnotesConnector(isSource: Boolean) : Connector(isSource) {
     }
 
 
-    override fun writeEntry(entry: Entry) = throw NotImplementedError("A write isn't implemented for Standardnotes yet")
+    override fun writeEntry(entry: Entry, source: String) = throw NotImplementedError("A write isn't implemented for Standardnotes yet")
 
-    override val name: String = "Standardnotes"
+    override val name: String = ConnectorTypes.STANDARDNOTES.value
 }
