@@ -38,7 +38,8 @@ class RedditConnector(val isSource: Boolean) : Connector {
     }
 
     override fun writeAllEntries(entries: List<Entry>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        throw NotImplementedError("Using reddit-saved as an archived for other links doesn't seem to " +
+                "make that much sense")
     }
 
     override fun getName(): String = "Reddit"
