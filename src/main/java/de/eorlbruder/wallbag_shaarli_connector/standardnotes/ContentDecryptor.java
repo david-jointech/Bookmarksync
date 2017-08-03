@@ -69,15 +69,46 @@ public class ContentDecryptor {
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00});
     final private static char[] hexArray = "0123456789abcdef".toCharArray();
 
-    public static String decryptV001(String enryptedContent, String ak, String mk, String authHash)
+    public static String decryptV002(String encryptedContent, String ak, String mk, String uuid)
             throws Exception {
         String contentJson;
-        String hash = createHash(enryptedContent, ak);
+        String[] contentBits = encryptedContent.split(":");
+        String authHash = contentBits[1];
+        String contentUuid = contentBits[2];
+        String ivHex = contentBits[3];
+        String cipherText = contentBits[4];
+        String stringToAuth = "002" + ":" + contentUuid + ":" + ivHex + ":" + cipherText;
+
+        if (!contentUuid.equals(uuid)) {
+            throw new Exception("Could not authenticate item");
+        }
+
+        // authenticate
+        String hash = createHash(stringToAuth, ak);
+        if (!hash.equals(authHash)) {
+            throw new Exception("could not authenticate item with hash " + hash + " against hash "
+                    + authHash);
+        }
+
+        contentJson = decrypt(cipherText, mk, ivHex);
+        return contentJson;
+    }
+
+
+    public static String decryptV000(String encryptedContent)
+            throws Exception {
+        return new String(DatatypeConverter.parseBase64Binary(encryptedContent), Charsets.UTF_8);
+    }
+
+    public static String decryptV001(String encryptedContent, String ak, String mk, String authHash)
+            throws Exception {
+        String contentJson;
+        String hash = createHash(encryptedContent, ak);
         if (!hash.toLowerCase().equals(authHash.toLowerCase())) {
             throw new Exception("could not authenticate item with hash " + hash + " against hash "
                     + authHash);
         }
-        contentJson = decrypt(enryptedContent.substring(3), mk, null);
+        contentJson = decrypt(encryptedContent.substring(3), mk, null);
         return contentJson;
     }
 

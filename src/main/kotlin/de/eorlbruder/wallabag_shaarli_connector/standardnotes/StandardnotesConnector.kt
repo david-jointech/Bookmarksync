@@ -28,6 +28,7 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
         var response = post(config.STANDARDNOTES_URL + "/items/sync",
                 headers = headers,
                 data = jsonRequestData.toString())
+        logger.debug(response.text)
         val result = java.util.ArrayList<Entry>()
         WallabagConnector.logger.debug("Processing Page with Status Code ${response.statusCode}")
         while (ResponseUtils.isSuccessfulStatusCode(response)) {
@@ -55,8 +56,14 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
                 val deleted = it.get("deleted") as Boolean
                 if (contentType == "Note" && !deleted) {
                     logger.debug(it.toString())
-                    val authHash = it.get("auth_hash") as String
-                    val content = decrypt(it.get("content") as String, authHash)
+                    val authHash = it.get("auth_hash")
+                    val uuid = it.get("uuid") as String
+                    val content = it.get("content") as String
+                    if (authHash is String) {
+                        decrypt(content, authHash = authHash)
+                    } else {
+                        decrypt(content, uuid = uuid)
+                    }
                     val description = ""
                     val title = ""
                     val tags = HashSet<String>()
@@ -69,13 +76,13 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
         return result
     }
 
-    fun decrypt(encryptedEntry: String, authHash: String): String {
+    fun decrypt(encryptedEntry: String, authHash: String = "", uuid: String = ""): String {
         if (encryptedEntry.substring(0..2) == "002") {
-            return decryptWithV002(encryptedEntry, authHash)
+            return decryptWithV002(encryptedEntry, uuid)
         } else if (encryptedEntry.substring(0..2) == "001") {
             return decryptWithV001(encryptedEntry, authHash)
         } else if (encryptedEntry.substring(0..2) == "000") {
-            return decryptWithV000(encryptedEntry, authHash)
+            return decryptWithV000(encryptedEntry)
         }
         throw NoSuchAlgorithmException()
     }
@@ -86,13 +93,14 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
         return result
     }
 
-    fun decryptWithV002(encryptedEntry: String, authHash: String): String {
-        logger.debug("002")
+    fun decryptWithV002(encryptedEntry: String, uuid: String): String {
+        val result = ContentDecryptor.decryptV002(encryptedEntry, config.STANDARDNOTES_AUTH_KEY,
+                config.STANDARDNOTES_MASTER_KEY, uuid)
         return encryptedEntry
     }
 
-    fun decryptWithV000(encryptedEntry: String, authHash: String): String {
-        logger.debug("002")
+    fun decryptWithV000(encryptedEntry: String): String {
+        val result = ContentDecryptor.decryptV000(encryptedEntry)
         return encryptedEntry
     }
 
