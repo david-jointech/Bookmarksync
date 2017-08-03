@@ -13,13 +13,13 @@ import org.json.JSONObject
 import java.security.NoSuchAlgorithmException
 
 
-class StandardnotesConnector(isSource: Boolean) : Connector {
+class StandardnotesConnector(isSource: Boolean) : Connector(isSource) {
 
     companion object : KLogging()
 
     val config : Sysconfig = Sysconfig()
 
-    override fun getAllEntries(): List<Entry> {
+    init {
         logger.info("Starting to extract all Entries from Standardnotes")
         val jsonRequestData = JSONObject()
         jsonRequestData.put("limit", 30)
@@ -28,11 +28,10 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
         var response = post(config.STANDARDNOTES_URL + "items/sync",
                 headers = headers,
                 data = jsonRequestData.toString())
-        val result = java.util.ArrayList<Entry>()
         WallabagConnector.logger.debug("Processing Page with Status Code ${response.statusCode}")
         while (ResponseUtils.isSuccessfulStatusCode(response)) {
             val json = JSONObject(response.text)
-            result.addAll(pruneAndExtractEntries(json))
+            pruneAndExtractEntries(json)
             val cursorToken = json.get("cursor_token")
             if (cursorToken == JSONObject.NULL) {
                 break
@@ -43,17 +42,17 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
                     data = jsonRequestData.toString())
             WallabagConnector.logger.debug("Processing Page with Status Code ${response.statusCode}")
         }
-        return result
     }
 
-    fun pruneAndExtractEntries(json: JSONObject): List<Entry> {
-        val result = ArrayList<Entry>()
+    fun pruneAndExtractEntries(json: JSONObject) {
         val retrievedItems = json.get("retrieved_items") as JSONArray
+        val decryptedNotes = ArrayList<JSONObject>()
+        val decryptedTags = HashMap<String, String>()
         retrievedItems.forEach {
             if (it is JSONObject) {
                 val contentType = it.get("content_type") as String
                 val deleted = it.get("deleted") as Boolean
-                if (contentType == "Note" && !deleted) {
+                if ((contentType == "Note" || contentType == "Tag") && !deleted) {
                     var authHash = it.get("auth_hash")
                     if (authHash !is String) {
                         authHash = ""
@@ -71,17 +70,36 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
                     }
                     val content = it.get("content") as String
                     val decryptedContent = decrypt(content, uuid = uuid, ak = ak, mk = mk,
-                            authHash = authHash as String)
-                    val description = ""
-                    val title = ""
-                    val tags = HashSet<String>()
-                    tags.add(getName())
-                    result.add(Entry(title, tags, description = description))
-                    logger.debug("Added Entry with Content $decryptedContent")
+                            authHash = authHash)
+                    if (contentType == "Note") {
+                        decryptedNotes.add(JSONObject(decryptedContent))
+                    } else {
+                        val tagJson = JSONObject(decryptedContent)
+                        val tagTitle = tagJson.get("title") as String
+                        decryptedTags.put(uuid, tagTitle)
+                    }
                 }
             }
         }
-        return result
+        decryptedNotes.forEach {
+            val title = it.get("title") as String
+            val description = it.get("text") as String
+            val tags = HashSet<String>()
+            tags.add(name)
+            val references = it.get("references") as JSONArray
+            references.forEach {
+                val contentType = (it as JSONObject).get("content_type")
+                if (contentType == "Tag") {
+                    val tagUuid = it.get("uuid") as String
+                    val tag = decryptedTags.get(tagUuid)
+                    if (tag != null)
+                        tags.add(tag)
+                }
+            }
+            val entry = Entry(title, tags, description = description)
+            entries.add(entry)
+            logger.debug("Added entry with title ${entry.title}")
+        }
     }
 
     fun decrypt(encryptedEntry: String, authHash: String = "", uuid: String = "", ak: String = "", mk: String = ""): String {
@@ -104,9 +122,8 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
         return token
     }
 
-    override fun writeAllEntries(entries: List<Entry>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
-    override fun getName(): String = "Standardnotes"
+    override fun writeEntry(entry: Entry) = throw NotImplementedError("A write isn't implemented for Standardnotes yet")
+
+    override val name: String = "Standardnotes"
 }

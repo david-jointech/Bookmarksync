@@ -11,45 +11,41 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
 
-class WallabagConnector(val isSource: Boolean) : Connector {
+class WallabagConnector(isSource: Boolean) : Connector(isSource) {
 
     companion object : KLogging()
 
     val config : Sysconfig = Sysconfig()
 
-    override fun getAllEntries(): List<Entry> {
+    init {
         var i = 1
         logger.info("Starting to retrieve All Entries from Wallabag")
         var response = get(getEntriesUrlForPage(i),
                 headers = getAuthHeader())
-        val result = ArrayList<Entry>()
         logger.debug("Processing Page $i with Status Code ${response.statusCode}")
         while (ResponseUtils.isSuccessfulStatusCode(response)) {
             val json = JSONObject(response.text)
-            result.addAll(pruneEntries(json))
+            pruneEntries(json)
             response = get(getEntriesUrlForPage(++i), headers = getAuthHeader())
             logger.debug("Processing Page $i with Status Code ${response.statusCode}")
         }
-        return result
     }
 
 
-    private fun pruneEntries(entries: JSONObject): ArrayList<Entry> {
+    private fun pruneEntries(entries: JSONObject) {
         val embedded = entries.get("_embedded")
-        val list = ArrayList<Entry>()
         val items = (embedded as JSONObject).get("items")
-        (items as JSONArray).forEach({ addEntry(list, it as JSONObject) })
-        return list
+        (items as JSONArray).forEach({ addEntry(it as JSONObject) })
     }
 
-    private fun addEntry(list: ArrayList<Entry>, it: JSONObject) {
+    private fun addEntry(it: JSONObject) {
         val title = it.get("title") as String
         val url = it.get("url") as String
         val tags = extractTags(it.get("tags") as JSONArray)
         if (it.get("is_starred") == 1) {
             tags.add("Starred")
         }
-        list.add(Entry(title, tags, url = url))
+        entries.add(Entry(title, tags, url = url))
     }
 
     private fun extractTags(tags: JSONArray): HashSet<String> {
@@ -72,7 +68,7 @@ class WallabagConnector(val isSource: Boolean) : Connector {
         throw Exception()
     }
 
-    override fun writeAllEntries(entries: List<Entry>) = throw NotImplementedError()
+    override fun writeEntry(entry: Entry) = throw NotImplementedError("A write isn't implemented for Wallabag yet")
     private fun getEntriesUrlForPage(i: Int) = config.WALLABAG_URL + Constants.WALLABAG_API_ENDPOINT + Constants.WALLABAG_ENTRIES + Constants.WALLABAG_PAGE_KEY + i
 
     private fun getAuthorizationUrl() : String {
@@ -84,5 +80,5 @@ class WallabagConnector(val isSource: Boolean) : Connector {
         return result
     }
 
-    override fun getName(): String = "Wallabag"
+    override val name: String = "Wallabag"
 }

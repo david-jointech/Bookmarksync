@@ -7,11 +7,9 @@ class Syncer(val sourceConnector: Connector, val targetConnector: Connector) {
     companion object : KLogging()
 
     fun sync() {
-        logger.info("Syncing entries from ${targetConnector.getName()} to ${sourceConnector.getName()}")
-        val sourceEntries = sourceConnector.getAllEntries()
-        val targetEntries = targetConnector.getAllEntries()
-        val entries = EntryMerger(sourceEntries, targetEntries).mergeEntries()
-        targetConnector.writeAllEntries(entries)
+        logger.info("Syncing entries from ${sourceConnector.name} to ${targetConnector.name}")
+        EntryMerger(sourceConnector, targetConnector).mergeEntries()
+        targetConnector.write()
     }
 
 }

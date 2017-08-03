@@ -14,17 +14,15 @@ import mu.KLogging
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
-import kotlin.collections.ArrayList
 
-class ShaarliConnector(val isSource: Boolean) : Connector {
+class ShaarliConnector(isSource: Boolean) : Connector(isSource) {
 
     companion object : KLogging()
 
     val config: Sysconfig = Sysconfig()
 
-    override fun getAllEntries(): List<Entry> {
+    init {
         var offset = 0
-        val result = ArrayList<Entry>()
         logger.info("Getting all Shaarli Entries imported from Wallabag")
         var response = get(getEntriesUrlForOffset(offset),
                 headers = getAuthHeader())
@@ -34,23 +32,22 @@ class ShaarliConnector(val isSource: Boolean) : Connector {
             if (jsonArray.length() < 1) {
                 break
             }
-            jsonArray.forEach({ pruneEntry(it as JSONObject, result) })
+            jsonArray.forEach({ pruneEntry(it as JSONObject) })
             offset += Constants.SHAARLI_LIMIT
             response = get(getEntriesUrlForOffset(offset), headers = getAuthHeader())
             logger.debug("Processing Page on $offset with Status Code ${response.statusCode}")
         }
-        return result
     }
 
-    private fun pruneEntry(entry: JSONObject, list: ArrayList<Entry>) {
+    private fun pruneEntry(entry: JSONObject) {
         val id = entry.get("id") as Int
         val title = entry.get("title") as String
         val url = entry.get("url") as String
         val tags = extractTags(entry.get("tags") as JSONArray)
         if (isSource) {
-            list.add(Entry(title, tags, url = url))
+            entries.add(Entry(title, tags, url = url))
         } else {
-            list.add(Entry(title, tags, url = url, id = id))
+            entries.add(Entry(title, tags, url = url, id = id))
         }
     }
 
@@ -86,12 +83,7 @@ class ShaarliConnector(val isSource: Boolean) : Connector {
         return token
     }
 
-    override fun writeAllEntries(entries: List<Entry>) {
-        logger.info("Writing all retrieved and modified Entries to Shaarli")
-        entries.forEach({ writeEntry(it) })
-    }
-
-    fun writeEntry(entry: Entry) {
+    override fun writeEntry(entry: Entry) {
         val json: JSONObject = jsonObjectFromEntry(entry)
         if (entry.id == -1) {
             logger.info("Creating new Entry with URL ${entry.url} in Shaarli")
@@ -119,10 +111,10 @@ class ShaarliConnector(val isSource: Boolean) : Connector {
         return json
     }
 
-    fun updateEntry(json: JSONObject, id: Int) {
+    private fun updateEntry(json: JSONObject, id: Int) {
         val response = put(getEntriesUrl() + "/$id", headers = getAuthHeader(), json = json)
         logger.debug(response.text)
     }
 
-    override fun getName(): String = "Shaarli"
+    override val name: String = "Shaarli"
 }

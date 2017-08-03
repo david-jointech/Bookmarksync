@@ -1,15 +1,24 @@
 package de.eorlbruder.wallabag_shaarli_connector.core
 
 import de.eorlbruder.wallabag_shaarli_connector.core.utils.ResponseUtils
+import de.eorlbruder.wallabag_shaarli_connector.shaarli.ShaarliConnector
 
-interface Connector {
-    fun getAllEntries(): List<Entry>
+abstract class Connector(val isSource: Boolean) {
 
-    fun getAuthHeader(): Map<String, String> = ResponseUtils.getAuthorizationHeaderWithToken(getAccessToken())
+    val entries = ArrayList<Entry>()
+    var entriesToSync = ArrayList<Entry>()
+    abstract val name: String
 
-    fun getAccessToken(): String
+    fun write() {
+        ShaarliConnector.logger.info("Writing all retrieved and modified Entries to $name")
+        entriesToSync.forEach { writeEntry(it) }
+    }
 
-    fun writeAllEntries(entries: List<Entry>)
 
-    fun getName(): String
+    protected fun getAuthHeader(): Map<String, String> = ResponseUtils.getAuthorizationHeaderWithToken(getAccessToken())
+
+    protected abstract fun getAccessToken(): String
+
+    protected abstract fun writeEntry(entry: Entry)
+
 }
