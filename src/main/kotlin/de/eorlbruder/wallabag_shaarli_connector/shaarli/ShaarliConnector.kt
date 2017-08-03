@@ -4,7 +4,7 @@ import de.eorlbruder.wallabag_shaarli_connector.core.Connector
 import de.eorlbruder.wallabag_shaarli_connector.core.Constants
 import de.eorlbruder.wallabag_shaarli_connector.core.Entry
 import de.eorlbruder.wallabag_shaarli_connector.core.Sysconfig
-import de.eorlbruder.wallabag_shaarli_connector.utils.ResponseUtils
+import de.eorlbruder.wallabag_shaarli_connector.core.utils.ResponseUtils
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import khttp.get

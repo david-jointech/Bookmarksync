@@ -1,6 +1,6 @@
 package de.eorlbruder.wallabag_shaarli_connector.core
 
-import de.eorlbruder.wallabag_shaarli_connector.utils.ResponseUtils
+import de.eorlbruder.wallabag_shaarli_connector.core.utils.ResponseUtils
 
 interface Connector {
     fun getAllEntries(): List<Entry>

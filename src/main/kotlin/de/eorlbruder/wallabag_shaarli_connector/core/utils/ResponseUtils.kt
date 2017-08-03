@@ -1,4 +1,4 @@
-package de.eorlbruder.wallabag_shaarli_connector.utils
+package de.eorlbruder.wallabag_shaarli_connector.core.utils
 
 import de.eorlbruder.wallabag_shaarli_connector.core.Constants
 import khttp.responses.Response

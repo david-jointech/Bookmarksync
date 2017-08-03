@@ -3,7 +3,7 @@ package de.eorlbruder.wallabag_shaarli_connector.standardnotes
 import de.eorlbruder.wallabag_shaarli_connector.core.Connector
 import de.eorlbruder.wallabag_shaarli_connector.core.Entry
 import de.eorlbruder.wallabag_shaarli_connector.core.Sysconfig
-import de.eorlbruder.wallabag_shaarli_connector.utils.ResponseUtils
+import de.eorlbruder.wallabag_shaarli_connector.core.utils.ResponseUtils
 import de.eorlbruder.wallabag_shaarli_connector.wallabag.WallabagConnector
 import de.eorlbruder.wallbag_shaarli_connector.standardnotes.EntryDecrypter
 import khttp.post
@@ -25,7 +25,7 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
         jsonRequestData.put("limit", 30)
         val headers = HashMap(getAuthHeader())
         headers.put("Content-type", "application/json")
-        var response = post(config.STANDARDNOTES_URL + "/items/sync",
+        var response = post(config.STANDARDNOTES_URL + "items/sync",
                 headers = headers,
                 data = jsonRequestData.toString())
         logger.debug(response.text)
@@ -39,7 +39,7 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
                 break
             }
             jsonRequestData.put("cursor_token", cursorToken as String)
-            response = post(config.STANDARDNOTES_URL + "/items/sync",
+            response = post(config.STANDARDNOTES_URL + "items/sync",
                     headers = headers,
                     data = jsonRequestData.toString())
             WallabagConnector.logger.debug("Processing Page with Status Code ${response.statusCode}")
@@ -102,7 +102,7 @@ class StandardnotesConnector(isSource: Boolean) : Connector {
     }
 
     override fun getAccessToken(): String {
-        val response = post(config.STANDARDNOTES_URL + "/auth/sign_in",
+        val response = post(config.STANDARDNOTES_URL + "auth/sign_in",
                 params = mapOf("email" to config.STANDARDNOTES_EMAIL,
                         "password" to config.STANDARDNOTES_SERVER_KEY))
         val token = JSONObject(response.text).get("token") as String

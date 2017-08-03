@@ -42,7 +42,6 @@ public class EntryDecrypter {
         return contentJson;
     }
 
-
     public static String decryptV000(String encryptedContent)
             throws Exception {
         return new String(DatatypeConverter.parseBase64Binary(encryptedContent), Charsets.UTF_8);

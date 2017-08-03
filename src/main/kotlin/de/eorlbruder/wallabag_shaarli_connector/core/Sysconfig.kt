@@ -28,6 +28,14 @@ class Sysconfig {
         val authkey by stringType
     }
 
+    object reddit : PropertyGroup() {
+        val url by stringType
+        val oauthurl by stringType
+        val username by stringType
+        val password by stringType
+        val clientid by stringType
+        val clientsecret by stringType
+    }
 
     private val config = ConfigurationProperties.fromResource("sysconfig.properties")
 
@@ -45,4 +53,11 @@ class Sysconfig {
     val STANDARDNOTES_SERVER_KEY = config[standardnotes.serverkey]
     val STANDARDNOTES_MASTER_KEY = config[standardnotes.masterkey]
     val STANDARDNOTES_AUTH_KEY = config[standardnotes.authkey]
+
+    val REDDIT_URL = config[reddit.url]
+    val REDDIT_OAUTHURL = config[reddit.oauthurl]
+    val REDDIT_USERNAME = config[reddit.username]
+    val REDDIT_PASSWORD = config[reddit.password]
+    val REDDIT_CLIENT_ID = config[reddit.clientid]
+    val REDDIT_CLIENT_SECRET = config[reddit.clientsecret]
 }
