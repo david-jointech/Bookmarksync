@@ -10,29 +10,8 @@ class MergeUtils {
 
         val connectorNames: List<String> = ConnectorTypes.values().map { it.value }
 
-        fun equalTags(tags0: Set<String>, tags1: Set<String>): Boolean {
-            return allTagsInOtherTagsOrConnectorName(tags0, tags1)
-        }
-
-        private fun allTagsInOtherTagsOrConnectorName(tags0: Set<String>, tags1: Set<String>): Boolean {
-            var result = true
-            for (tag0 in tags0) {
-                result = result && tagInOtherTagsOrConnectorName(tag0, tags1)
-            }
-            for (tag1 in tags1) {
-                result = result && tagInOtherTagsOrConnectorName(tag1, tags0)
-            }
-            return result
-        }
-
-        private fun tagInOtherTagsOrConnectorName(tag0: String, tags1: Set<String>): Boolean {
-            if (tags1.contains(tag0)) {
-                return true
-            }
-            if (connectorNames.contains(tag0)) {
-                return true
-            }
-            return false
+        fun containsAllTags(sourceTags: Set<String>, targetTags: Set<String>): Boolean {
+            return targetTags.containsAll(sourceTags)
         }
 
         fun entryEqual(entry0: Entry, entry1: Entry): Boolean {

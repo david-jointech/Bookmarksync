@@ -21,22 +21,22 @@ class EntryMerger(sourceConnector: Connector, private val targetConnector: Conne
         targetConnector.entriesToSync = result
     }
 
-    private fun mergeEntry(entry: Entry, result: ArrayList<Entry>) {
+    private fun mergeEntry(sourceEntry: Entry, result: ArrayList<Entry>) {
         //TODO needs to work well with Notes too...
-        val targetEntry: Entry? = targetEntries.find { MergeUtils.entryEqual(it, entry) }
+        val targetEntry: Entry? = targetEntries.find { MergeUtils.entryEqual(it, sourceEntry) }
         if (targetEntry == null) {
-            logger.debug("Entry with URL ${entry.url} not found in ${targetConnector.name}" +
+            logger.debug("Entry with URL ${sourceEntry.url} not found in ${targetConnector.name}" +
                     ", creating new Entry")
-            result.add(entry.copy(id = "no_id"))
+            result.add(sourceEntry.copy(id = "no_id"))
         } else {
-            if (!MergeUtils.equalTags(targetEntry.tags, entry.tags)) {
-                logger.debug("Entry with URL ${entry.url} found in ${targetConnector.name}" +
+            if (!MergeUtils.containsAllTags(sourceEntry.tags, targetEntry.tags)) {
+                logger.debug("Entry with URL ${sourceEntry.url} found in ${targetConnector.name}" +
                         ", but tags appear to have changed, updating Entry")
-                val tags = HashSet<String>(entry.tags)
+                val tags = HashSet<String>(sourceEntry.tags)
                 tags.addAll(targetEntry.tags)
-                result.add(entry.copy(id = targetEntry.id, tags = entry.tags))
+                result.add(sourceEntry.copy(id = targetEntry.id, tags = sourceEntry.tags))
             } else {
-                logger.debug("Entry with URL ${entry.url} found in ${targetConnector.name}" +
+                logger.debug("Entry with URL ${sourceEntry.url} found in ${targetConnector.name}" +
                         " and unchanged, doing nothing")
             }
         }
