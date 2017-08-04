@@ -22,24 +22,40 @@ class EntryMerger(sourceConnector: Connector, private val targetConnector: Conne
     }
 
     private fun mergeEntry(sourceEntry: Entry, result: ArrayList<Entry>) {
-        //TODO needs to work well with Notes too...
         val targetEntry: Entry? = targetEntries.find { MergeUtils.entryEqual(sourceEntry, it) }
         if (targetEntry == null) {
             logger.debug("Entry with URL ${sourceEntry.url} not found in ${targetConnector.name}" +
                     ", creating new Entry")
             result.add(sourceEntry.copy(id = "no_id"))
         } else {
-            if (MergeUtils.haveTagsChanged(sourceEntry.tags, targetEntry.tags) ||
-                    MergeUtils.hasTitleChanged(sourceEntry.title, targetEntry.title) ||
-                    MergeUtils.hasDescriptionChanged(sourceEntry.description, targetEntry.description)) {
+            var changed = false
+            val tags = HashSet<String>(targetEntry.tags)
+            var description = targetEntry.description
+            var title = targetEntry.title
+            if (MergeUtils.haveTagsChanged(sourceEntry.tags, targetEntry.tags)) {
                 logger.debug("Entry with URL ${sourceEntry.url} found in ${targetConnector.name}" +
-                        ", but tags appear to have changed, updating Entry")
-                val tags = HashSet<String>(sourceEntry.tags)
-                tags.addAll(targetEntry.tags)
-                result.add(sourceEntry.copy(id = targetEntry.id, tags = tags))
-            } else {
+                        ", but Tags appears to have changed, updating Entry")
+                changed = true
+                tags.addAll(sourceEntry.tags)
+            }
+            if (MergeUtils.hasTitleChanged(sourceEntry.title, targetEntry.title)) {
+                logger.debug("Entry with URL ${sourceEntry.url} found in ${targetConnector.name}" +
+                        ", but Title appears to have changed, updating Entry")
+                changed = true
+                title = sourceEntry.title
+            }
+            if (MergeUtils.hasDescriptionChanged(sourceEntry.description, targetEntry.description)) {
+                logger.debug("Entry with URL ${sourceEntry.url} found in ${targetConnector.name}" +
+                        ", but Description appears to have changed, updating Entry")
+                changed = true
+                description = sourceEntry.description
+            }
+            if (!changed) {
                 logger.debug("Entry with URL ${sourceEntry.url} found in ${targetConnector.name}" +
                         " and unchanged, doing nothing")
+            } else {
+                result.add(sourceEntry.copy(id = targetEntry.id, tags = tags, title = title,
+                        description = description))
             }
         }
     }

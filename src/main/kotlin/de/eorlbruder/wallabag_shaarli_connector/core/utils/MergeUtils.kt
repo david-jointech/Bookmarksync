@@ -15,11 +15,11 @@ class MergeUtils {
         }
 
         fun hasTitleChanged(sourceTitle: String, targetTitle: String): Boolean {
-            return false // TODO implement
+            return sourceTitle != targetTitle
         }
 
-        fun hasDescriptionChanged(sourceDescription: String, targetTags: String): Boolean {
-            return false // TODO implement
+        fun hasDescriptionChanged(sourceDescription: String, targetDescription: String): Boolean {
+            return sourceDescription != targetDescription
         }
 
         fun entryEqual(sourceEntry: Entry, targetEntry: Entry): Boolean {

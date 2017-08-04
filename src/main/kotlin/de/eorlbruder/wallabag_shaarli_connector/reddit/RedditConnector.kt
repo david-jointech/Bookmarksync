@@ -56,12 +56,12 @@ class RedditConnector : Connector() {
             val type = (it as JSONObject).get("kind") as String
             val data = it.get("data") as JSONObject
             val id = data.get("id") as String
-            var url = ""
-            var title = ""
+            val url: String
+            val title: String
             val tags = HashSet<String>()
             if (type == "t1") {
                 url = (data.get("link_permalink") as String) + id
-                title = data.get("link_title") as String
+                title = "Comment to: " + data.get("link_title") as String
                 tags.add(data.get("subreddit") as String)
             } else if (type == "t3") {
                 url = config.REDDIT_URL + (data.get("permalink") as String).substring(1)
