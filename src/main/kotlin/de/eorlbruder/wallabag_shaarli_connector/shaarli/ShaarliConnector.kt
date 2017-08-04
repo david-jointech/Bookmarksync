@@ -4,6 +4,7 @@ import de.eorlbruder.wallabag_shaarli_connector.core.*
 import de.eorlbruder.wallabag_shaarli_connector.core.utils.ResponseUtils
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import khttp.delete
 import khttp.get
 import khttp.post
 import khttp.put
@@ -20,7 +21,8 @@ class ShaarliConnector : Connector() {
 
     init {
         var offset = 0
-        logger.info("Getting all Shaarli Entries imported from Wallabag")
+        logger.info("Starting to retrieve All Entries from Shaarli")
+        // Todo give params as params and not in url
         var response = get(getEntriesUrlForOffset(offset),
                 headers = getAuthHeader())
         logger.debug("Processing Page on $offset with Status Code ${response.statusCode}")
@@ -111,4 +113,13 @@ class ShaarliConnector : Connector() {
     }
 
     override val name: String = ConnectorTypes.SHAARLI.value
+
+    fun deleteAllEntriesWithTag(tag: String) {
+        val entriesWithTag = entries.filter { it.tags.contains(tag) }
+        logger.debug(entriesWithTag.size.toString())
+        entriesWithTag.forEach {
+            val response = delete(getEntriesUrl() + "/${Integer.parseInt(it.id)}", headers = getAuthHeader())
+            logger.debug("Deleted entry ${it.id} with status code: ${response.statusCode}")
+        }
+    }
 }

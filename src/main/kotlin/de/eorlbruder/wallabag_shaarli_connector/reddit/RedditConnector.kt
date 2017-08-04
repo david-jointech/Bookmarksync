@@ -4,6 +4,8 @@ import de.eorlbruder.wallabag_shaarli_connector.core.Connector
 import de.eorlbruder.wallabag_shaarli_connector.core.ConnectorTypes
 import de.eorlbruder.wallabag_shaarli_connector.core.Entry
 import de.eorlbruder.wallabag_shaarli_connector.core.Sysconfig
+import de.eorlbruder.wallabag_shaarli_connector.core.utils.ResponseUtils
+import javafx.util.converter.DoubleStringConverter
 import khttp.get
 import khttp.post
 import khttp.structures.authorization.BasicAuthorization
@@ -18,27 +20,57 @@ class RedditConnector : Connector() {
     val config: Sysconfig = Sysconfig()
 
     init {
+        logger.info("Starting to retrieve All Entries from Reddit")
         val headers = HashMap(getAuthHeader())
         headers.put("User-Agent", "WallabagShaarliConnector/0.1 by EorlBruder")
-        val response = get("${config.REDDIT_OAUTHURL}user/${config.REDDIT_USERNAME}/saved",
+        var response = get("${config.REDDIT_OAUTHURL}user/${config.REDDIT_USERNAME}/saved",
                 headers = headers)
-        // TODO Listing stuff! https://www.reddit.com/dev/api#listings
-        val responseJson = JSONObject(response.text)
-        pruneEntries(responseJson)
+        while (ResponseUtils.isSuccessfulStatusCode(response)) {
+            val responseJson = JSONObject(response.text)
+            val allData = responseJson.get("data") as JSONObject
+            val after = allData.get("after")
+            pruneEntries(allData)
+            if (after is String) {
+                val params = HashMap<String, String>()
+                params.put("after", after)
+                params.put("count", entries.size.toString())
+                val rateLimitRemaining = response.headers.get("X-Ratelimit-Remaining")
+                logger.debug("Processing Page $after with Status Code ${response.statusCode}, " +
+                        "already fetched ${entries.size} Entries")
+                if (DoubleStringConverter().fromString(rateLimitRemaining) < 1) {
+                    val secondsTillReset = response.headers.get("X-Ratelimit-Reset")
+                    Thread.sleep(Integer.parseInt(secondsTillReset) * 1000L)
+                }
+                response = get("${config.REDDIT_OAUTHURL}user/${config.REDDIT_USERNAME}/saved",
+                        headers = headers, params = params)
+            } else {
+                break
+            }
+        }
         entries.reverse()
     }
 
     fun pruneEntries(json: JSONObject) {
-        val allData = json.get("data") as JSONObject
-        val dataArray = allData.get("children") as JSONArray
+        val dataArray = json.get("children") as JSONArray
         dataArray.forEach {
-            val data = (it as JSONObject).get("data") as JSONObject
-            val tags = ArrayList<String>()
-            tags.add(name)
-            logger.debug(data.toString())
-            // TODO get the specs of the returned data, else this will get really tedious
-            val url = data.get("link_permalink") as String
-            val title = data.get("link_title") as String
+            val type = (it as JSONObject).get("kind") as String
+            val data = it.get("data") as JSONObject
+            val id = data.get("id") as String
+            var url = ""
+            var title = ""
+            val tags = HashSet<String>()
+            if (type == "t1") {
+                url = (data.get("link_permalink") as String) + id
+                title = data.get("link_title") as String
+                tags.add(data.get("subreddit") as String)
+            } else if (type == "t3") {
+                url = config.REDDIT_URL + (data.get("permalink") as String).substring(1)
+                title = data.get("title") as String
+                tags.add(data.get("subreddit") as String)
+            } else {
+                throw Exception("Unknown Type")
+            }
+            entries.add(Entry(title, tags, id, url = url))
         }
     }
 

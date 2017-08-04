@@ -21,7 +21,7 @@ class StandardnotesConnector : Connector() {
     val config : Sysconfig = Sysconfig()
 
     init {
-        logger.info("Starting to extract all Entries from Standardnotes")
+        logger.info("Starting to retrieve all Entries from Standardnotes")
         val jsonRequestData = JSONObject()
         jsonRequestData.put("limit", 30)
         val headers = HashMap(getAuthHeader())
