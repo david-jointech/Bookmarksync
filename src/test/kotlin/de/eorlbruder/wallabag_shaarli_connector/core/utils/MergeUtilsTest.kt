@@ -12,11 +12,11 @@ class MergeUtilsTest {
         val targetTags = HashSet<String>()
         targetTags.add("Art")
         targetTags.add("Wallabag")
-        assertTrue(MergeUtils.containsAllTags(sourceTags, targetTags))
+        assertTrue(MergeUtils.haveTagsChanged(sourceTags, targetTags))
         targetTags.add("Blafoo")
-        assertTrue(MergeUtils.containsAllTags(sourceTags, targetTags))
+        assertTrue(MergeUtils.haveTagsChanged(sourceTags, targetTags))
         sourceTags.add("NewTag")
-        assertFalse(MergeUtils.containsAllTags(sourceTags, targetTags))
+        assertFalse(MergeUtils.haveTagsChanged(sourceTags, targetTags))
     }
 
     @Test

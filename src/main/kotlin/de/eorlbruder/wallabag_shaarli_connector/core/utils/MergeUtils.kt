@@ -10,19 +10,27 @@ class MergeUtils {
 
         val connectorNames: List<String> = ConnectorTypes.values().map { it.value }
 
-        fun containsAllTags(sourceTags: Set<String>, targetTags: Set<String>): Boolean {
-            return targetTags.containsAll(sourceTags)
+        fun haveTagsChanged(sourceTags: Set<String>, targetTags: Set<String>): Boolean {
+            return !targetTags.containsAll(sourceTags)
         }
 
-        fun entryEqual(entry0: Entry, entry1: Entry): Boolean {
-            if (entry0.url == "" || entry1.url == "") {
-                return noteEqual(entry0, entry1)
+        fun hasTitleChanged(sourceTitle: String, targetTitle: String): Boolean {
+            return false // TODO implement
+        }
+
+        fun hasDescriptionChanged(sourceDescription: String, targetTags: String): Boolean {
+            return false // TODO implement
+        }
+
+        fun entryEqual(sourceEntry: Entry, targetEntry: Entry): Boolean {
+            if (sourceEntry.url == "") {
+                return noteEqual(sourceEntry, targetEntry)
             }
-            return equalUrls(entry0.url, entry1.url)
+            return equalUrls(sourceEntry.url, targetEntry.url)
         }
 
-        private fun noteEqual(entry0: Entry, entry1: Entry): Boolean {
-            return false //TODO this is just a stub
+        private fun noteEqual(sourceEntry: Entry, targetEntry: Entry): Boolean {
+            return targetEntry.tags.contains("000_${sourceEntry.id}")
         }
 
         private fun equalUrls(url0: String, url1: String): Boolean {

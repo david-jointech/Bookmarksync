@@ -90,6 +90,9 @@ class StandardnotesConnector : Connector() {
             val description = it.get("text") as String
             val id = it.get("uuid") as String
             val tags = extractTags(it, decryptedTags)
+            // As we are using a Note and most targetConnectors don't have a "foreignid" we will add
+            // a tag with the id, to identify this entry in the target.
+            tags.add("000_$id")
             val entry = Entry(title, tags, id, description = description)
             entries.add(entry)
             logger.debug("Added entry with title ${entry.title}")
