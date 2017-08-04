@@ -35,18 +35,24 @@ class EntryMerger(sourceConnector: Connector, private val targetConnector: Conne
             if (MergeUtils.haveTagsChanged(sourceEntry.tags, targetEntry.tags)) {
                 logger.debug("Entry with URL ${sourceEntry.url} found in ${targetConnector.name}" +
                         ", but Tags appears to have changed, updating Entry")
+                logger.debug(sourceEntry.tags.toString())
+                logger.debug(targetEntry.tags.toString())
                 changed = true
                 tags.addAll(sourceEntry.tags)
             }
             if (MergeUtils.hasTitleChanged(sourceEntry.title, targetEntry.title)) {
                 logger.debug("Entry with URL ${sourceEntry.url} found in ${targetConnector.name}" +
                         ", but Title appears to have changed, updating Entry")
+                logger.debug(sourceEntry.title)
+                logger.debug(targetEntry.title)
                 changed = true
                 title = sourceEntry.title
             }
             if (MergeUtils.hasDescriptionChanged(sourceEntry.description, targetEntry.description)) {
                 logger.debug("Entry with URL ${sourceEntry.url} found in ${targetConnector.name}" +
                         ", but Description appears to have changed, updating Entry")
+                logger.debug(sourceEntry.description)
+                logger.debug(targetEntry.description)
                 changed = true
                 description = sourceEntry.description
             }

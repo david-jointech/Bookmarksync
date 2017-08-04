@@ -3,6 +3,7 @@ package de.eorlbruder.wallabag_shaarli_connector.core.utils
 import de.eorlbruder.wallabag_shaarli_connector.core.ConnectorTypes
 import de.eorlbruder.wallabag_shaarli_connector.core.Entry
 import mu.KLogging
+import org.apache.commons.text.StringEscapeUtils
 
 class MergeUtils {
 
@@ -15,11 +16,18 @@ class MergeUtils {
         }
 
         fun hasTitleChanged(sourceTitle: String, targetTitle: String): Boolean {
-            return sourceTitle != targetTitle
+            val unescapedSourceTitle = StringEscapeUtils.unescapeHtml4(sourceTitle)
+            val unescapedTargetTitle = StringEscapeUtils.unescapeHtml4(targetTitle)
+            return unescapedSourceTitle != unescapedTargetTitle
         }
 
         fun hasDescriptionChanged(sourceDescription: String, targetDescription: String): Boolean {
-            return sourceDescription != targetDescription
+            // If the Source has an Empty Description we don't want to override anything
+            if (sourceDescription == "")
+                return false
+            val unescapedSourceDescription = StringEscapeUtils.unescapeHtml4(sourceDescription)
+            val unescapedTargetDescription = StringEscapeUtils.unescapeHtml4(targetDescription)
+            return unescapedSourceDescription != unescapedTargetDescription
         }
 
         fun entryEqual(sourceEntry: Entry, targetEntry: Entry): Boolean {
@@ -40,7 +48,7 @@ class MergeUtils {
         }
 
         private fun escapeUrl(url: String): String {
-            var url_ = url.replace("&amp;", "&")
+            var url_ = StringEscapeUtils.unescapeHtml4(url)
             url_ = url_.replace("\\?xtor=.*".toRegex(), "")
             url_ = url_.replace("\\&xtor=.*".toRegex(), "")
             url_ = url_.replace("\\?utm_source=.*".toRegex(), "")

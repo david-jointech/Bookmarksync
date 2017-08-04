@@ -13,13 +13,12 @@ fun main(args: Array<String>) {
 }
 
 fun sync() {
-    val shaarli: Connector = ShaarliConnector()
-    val wallabag: Connector = WallabagConnector()
-    val reddit: Connector = RedditConnector()
-    val standardnotes: Connector = StandardnotesConnector()
-    Syncer(wallabag, shaarli).sync()
-    Syncer(standardnotes, shaarli).sync()
-    Syncer(reddit, shaarli).sync()
+    val targetConnector: Connector = ShaarliConnector()
+    val sourceConnectors = ArrayList<Connector>()
+    sourceConnectors.add(WallabagConnector())
+    sourceConnectors.add(RedditConnector())
+    sourceConnectors.add(StandardnotesConnector())
+    Syncer(sourceConnectors, targetConnector).sync()
 }
 
 fun delete() {

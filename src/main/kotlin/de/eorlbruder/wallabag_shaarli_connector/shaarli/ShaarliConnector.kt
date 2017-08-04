@@ -42,9 +42,10 @@ class ShaarliConnector : Connector() {
     private fun pruneEntry(entry: JSONObject) {
         val id = entry.get("id") as Int
         val title = entry.get("title") as String
+        val description = entry.get("description") as String
         val url = entry.get("url") as String
         val tags = extractTags(entry.get("tags") as JSONArray)
-        entries.add(Entry(title, tags, id.toString(), url = url))
+        entries.add(Entry(title, tags, id.toString(), url = url, description = description))
     }
 
     private fun extractTags(tags: JSONArray): HashSet<String> {

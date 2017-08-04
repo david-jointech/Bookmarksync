@@ -2,14 +2,16 @@ package de.eorlbruder.wallabag_shaarli_connector.core
 
 import mu.KLogging
 
-class Syncer(val sourceConnector: Connector, val targetConnector: Connector) {
+class Syncer(val sourceConnectors: List<Connector>, val targetConnector: Connector) {
 
     companion object : KLogging()
 
     fun sync() {
-        logger.info("Syncing entries from ${sourceConnector.name} to ${targetConnector.name}")
-        EntryMerger(sourceConnector, targetConnector).mergeEntries()
-        targetConnector.write(sourceConnector.name)
+        sourceConnectors.forEach {
+            logger.info("Syncing entries from ${it.name} to ${targetConnector.name}")
+            EntryMerger(it, targetConnector).mergeEntries()
+            targetConnector.write(it.name)
+        }
     }
 
 }
