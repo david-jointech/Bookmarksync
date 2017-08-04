@@ -14,7 +14,7 @@ buildscript {
 apply plugin: 'kotlin'
 apply plugin: 'application'
 
-mainClassName = 'de.eorlbruder.wallabag_shaarli_connector.core.MainKt'
+mainClassName = 'de.eorlbruder.bookmarksync.core.MainKt'
 
 defaultTasks 'run'
 

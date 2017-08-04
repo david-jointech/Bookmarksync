@@ -1,4 +1,4 @@
-package de.eorlbruder.wallabag_shaarli_connector.core.utils
+package de.eorlbruder.bookmarksync.core.utils
 
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -20,7 +20,17 @@ class MergeUtilsTest {
     }
 
     @Test
-    fun testEqualEntries() {
+    fun testChangedTitle() {
+        assertTrue(true)
+    }
 
+    @Test
+    fun testChangedDescription() {
+        assertTrue(true)
+    }
+
+    @Test
+    fun testEqualEntries() {
+        assertTrue(true)
     }
 }

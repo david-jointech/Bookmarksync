@@ -1,7 +1,7 @@
-package de.eorlbruder.wallabag_shaarli_connector.core.utils
+package de.eorlbruder.bookmarksync.core.utils
 
-import de.eorlbruder.wallabag_shaarli_connector.core.ConnectorTypes
-import de.eorlbruder.wallabag_shaarli_connector.core.Entry
+import de.eorlbruder.bookmarksync.core.ConnectorTypes
+import de.eorlbruder.bookmarksync.core.Entry
 import mu.KLogging
 import org.apache.commons.text.StringEscapeUtils
 
