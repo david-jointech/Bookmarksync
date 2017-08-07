@@ -1,11 +1,11 @@
 package de.eorlbruder.bookmarksync.core
 
-import com.natpryce.konfig.ConfigurationProperties
-import com.natpryce.konfig.PropertyGroup
-import com.natpryce.konfig.getValue
-import com.natpryce.konfig.stringType
+import com.natpryce.konfig.*
 
 class Sysconfig {
+
+    val targetconnector by stringType
+    val sourceconnectors by listType(stringType)
 
     object wallabag : PropertyGroup() {
         val url by stringType
@@ -38,6 +38,9 @@ class Sysconfig {
     }
 
     private val config = ConfigurationProperties.fromResource("sysconfig.properties")
+
+    val TARGET_CONNECTOR = config[targetconnector]
+    val SOURCE_CONNECTORS = config[sourceconnectors]
 
     val WALLABAG_URL = config[wallabag.url]
     val WALLABAG_USERNAME = config[wallabag.username]
