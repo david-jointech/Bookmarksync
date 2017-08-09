@@ -63,24 +63,28 @@ class StandardnotesConnector : Connector() {
                     val encItemKey = it.get("enc_item_key")
                     var ak = ""
                     var mk = ""
-                    if (encItemKey is String) {
-                        val decryptedKey = decrypt(encItemKey, uuid = uuid,
-                                ak = config.STANDARDNOTES_AUTH_KEY,
-                                mk = config.STANDARDNOTES_MASTER_KEY, authHash = authHash)
-                        mk = decryptedKey.substring(0, decryptedKey.length / 2)
-                        ak = decryptedKey.substring(decryptedKey.length / 2, decryptedKey.length)
-                    }
-                    val content = it.get("content") as String
-                    val decryptedContent = decrypt(content, uuid = uuid, ak = ak, mk = mk,
-                            authHash = authHash)
-                    if (contentType == "Note") {
-                        val noteJson = JSONObject(decryptedContent)
-                        noteJson.put("uuid", uuid)
-                        decryptedNotes.add(noteJson)
-                    } else {
-                        val tagJson = JSONObject(decryptedContent)
-                        val tagTitle = tagJson.get("title") as String
-                        decryptedTags.put(uuid, tagTitle)
+                    try {
+                        if (encItemKey is String) {
+                            val decryptedKey = decrypt(encItemKey, uuid = uuid,
+                                    ak = config.STANDARDNOTES_AUTH_KEY,
+                                    mk = config.STANDARDNOTES_MASTER_KEY, authHash = authHash)
+                            mk = decryptedKey.substring(0, decryptedKey.length / 2)
+                            ak = decryptedKey.substring(decryptedKey.length / 2, decryptedKey.length)
+                        }
+                        val content = it.get("content") as String
+                        val decryptedContent = decrypt(content, uuid = uuid, ak = ak, mk = mk,
+                                authHash = authHash)
+                        if (contentType == "Note") {
+                            val noteJson = JSONObject(decryptedContent)
+                            noteJson.put("uuid", uuid)
+                            decryptedNotes.add(noteJson)
+                        } else {
+                            val tagJson = JSONObject(decryptedContent)
+                            val tagTitle = tagJson.get("title") as String
+                            decryptedTags.put(uuid, tagTitle)
+                        }
+                    } catch (e: NoSuchAlgorithmException) {
+                        logger.warn("Entry with uuid $uuid has an unknown decrption Algorithm - skipping")
                     }
                 }
             }
