@@ -11,6 +11,6 @@ pipeline:
     username: ${DRONE_ADMIN_MAIL}
     password: ${DRONE_MAIL_PW}
     from: ${DRONE_ADMIN_MAIL}
-    recipients: [${DRONE_ADMIN_MAIL}]
+    recipients: ${DRONE_ADMIN_MAIL}
     when:
       status: [ changed, failure ]
