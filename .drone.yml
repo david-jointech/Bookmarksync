@@ -5,14 +5,15 @@ pipeline:
       - GRADLE_USER_HOME=/.gradle
     commands:
       - ./gradlew test
+  build:
+    image: openjdk:8
+    environment:
+      - GRADLE_USER_HOME=/.gradle
+    commands:
+      - ./gradlew jar
+      - ls
   notify:
     image: drillster/drone-email
-    host: ${DRONE_SMTP}
-    username: ${DRONE_ADMIN_MAIL}
-    password: ${DRONE_MAIL_PW}
-    from: ${DRONE_ADMIN_MAIL}
-    recipients:
-      - ${DRONE_ADMIN_MAIL}
     when:
       status: [ changed, failure ]
     secrets:
