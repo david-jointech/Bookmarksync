@@ -10,16 +10,18 @@ pipeline:
     environment:
       - GRADLE_USER_HOME=/.gradle
     commands:
-      - ./gradlew jar
+      - ./gradlew fatJar
       - ls
+    when:
+      branch: master
+      status: [ sucess ]
   notify:
     image: drillster/drone-email
     when:
       status: [ changed, failure ]
-    secrets:
-      host: drone_smtp
-      username: drone_admin_mail
-      from: drone_admin_mail
-      recipients:
-       - drone_admin_mail
-      password: drone_admin_mail_pw
+    host: $DRONE_SMTP
+    username: $DRONE_ADMIN_MAIL
+    from: $DRONE_ADMIN_MAIL
+    recipients:
+     - $DRONE_ADMIN_MAIL
+    password: $DRONE_ADMIN_MAIL_PW
