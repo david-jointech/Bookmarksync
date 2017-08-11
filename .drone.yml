@@ -1,0 +1,5 @@
+pipeline:
+  test:
+    image: gradle
+    commands:
+      gradle test
