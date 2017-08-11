@@ -19,16 +19,15 @@ pipeline:
     when:
       branch: master
       status: [ sucess ]
-    image:
-        image: plugins/docker:1.12
-        username: ${DOCKER_USERNAME}
-        password: ${DOCKER_PASSWORD}
-        #email: ${DOCKER_EMAIL}
-        repo: build.registry.eorlbruder.de/bookmarksync
-        tags:
-          - latest
-        #dockerfile: ./Dockerfile
-        #context: ./
+    image: plugins/docker:1.12
+    username: ${DOCKER_USERNAME}
+    password: ${DOCKER_PASSWORD}
+    #email: ${DOCKER_EMAIL}
+    repo: build.registry.eorlbruder.de/bookmarksync
+    tags:
+      - latest
+    #dockerfile: ./Dockerfile
+    #context: ./
   notify:
     image: drillster/drone-email
     when:
