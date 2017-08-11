@@ -1,3 +1,7 @@
+# Required fields
+bookmarksync.targetconnector=Shaarli
+bookmarksync.sourceconnectors=Standardnotes,Reddit,Wallabag
+# Semi-Optional, if you want to use a connector, you need all fields belonging to it
 wallabag.url=myurl
 wallabag.username=myusername
 wallabag.password=mypassword

@@ -1,6 +1,9 @@
 package de.eorlbruder.bookmarksync.shaarli
 
-import de.eorlbruder.bookmarksync.core.*
+import de.eorlbruder.bookmarksync.core.Connector
+import de.eorlbruder.bookmarksync.core.ConnectorTypes
+import de.eorlbruder.bookmarksync.core.Constants
+import de.eorlbruder.bookmarksync.core.Entry
 import de.eorlbruder.bookmarksync.core.utils.ResponseUtils
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -17,11 +20,11 @@ class ShaarliConnector : Connector() {
 
     companion object : KLogging()
 
-    val config: Sysconfig = Sysconfig()
-
     init {
         var offset = 0
+        checkRequiredConfig()
         logger.info("Starting to retrieve All Entries from Shaarli")
+        checkRequiredConfig()
         // Todo give params as params and not in url
         var response = get(getEntriesUrlForOffset(offset),
                 headers = getAuthHeader())
@@ -122,5 +125,10 @@ class ShaarliConnector : Connector() {
             val response = delete(getEntriesUrl() + "/${Integer.parseInt(it.id)}", headers = getAuthHeader())
             logger.debug("Deleted entry ${it.id} with status code: ${response.statusCode}")
         }
+    }
+
+    override fun fillRequiredConfig() {
+        requiredConfigs.add(config.SHAARLI_URL)
+        requiredConfigs.add(config.SHAARLI_SECRET)
     }
 }

@@ -1,6 +1,9 @@
 package de.eorlbruder.bookmarksync.wallabag
 
-import de.eorlbruder.bookmarksync.core.*
+import de.eorlbruder.bookmarksync.core.Connector
+import de.eorlbruder.bookmarksync.core.ConnectorTypes
+import de.eorlbruder.bookmarksync.core.Constants
+import de.eorlbruder.bookmarksync.core.Entry
 import de.eorlbruder.bookmarksync.core.utils.ResponseUtils
 import khttp.get
 import mu.KLogging
@@ -11,8 +14,6 @@ import java.util.*
 class WallabagConnector : Connector() {
 
     companion object : KLogging()
-
-    val config: Sysconfig = Sysconfig()
 
     init {
         var i = 1
@@ -79,4 +80,12 @@ class WallabagConnector : Connector() {
     }
 
     override val name: String = ConnectorTypes.WALLABAG.value
+
+    override fun fillRequiredConfig() {
+        requiredConfigs.add(config.WALLABAG_CLIENT_ID)
+        requiredConfigs.add(config.WALLABAG_CLIENT_SECRET)
+        requiredConfigs.add(config.WALLABAG_PASSWORD)
+        requiredConfigs.add(config.WALLABAG_URL)
+        requiredConfigs.add(config.WALLABAG_USERNAME)
+    }
 }

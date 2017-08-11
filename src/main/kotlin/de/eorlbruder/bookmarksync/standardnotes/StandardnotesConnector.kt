@@ -3,7 +3,6 @@ package de.eorlbruder.bookmarksync.standardnotes
 import de.eorlbruder.bookmarksync.core.Connector
 import de.eorlbruder.bookmarksync.core.ConnectorTypes
 import de.eorlbruder.bookmarksync.core.Entry
-import de.eorlbruder.bookmarksync.core.Sysconfig
 import de.eorlbruder.bookmarksync.core.utils.ResponseUtils
 import de.eorlbruder.bookmarksync.standardnotes.util.EntryDecrypter
 import de.eorlbruder.bookmarksync.wallabag.WallabagConnector
@@ -17,8 +16,6 @@ import java.security.NoSuchAlgorithmException
 class StandardnotesConnector : Connector() {
 
     companion object : KLogging()
-
-    val config: Sysconfig = Sysconfig()
 
     init {
         logger.info("Starting to retrieve all Entries from Standardnotes")
@@ -142,4 +139,12 @@ class StandardnotesConnector : Connector() {
     override fun writeEntry(entry: Entry, source: String) = throw NotImplementedError("A write isn't implemented for Standardnotes yet")
 
     override val name: String = ConnectorTypes.STANDARDNOTES.value
+
+    override fun fillRequiredConfig() {
+        requiredConfigs.add(config.STANDARDNOTES_AUTH_KEY)
+        requiredConfigs.add(config.STANDARDNOTES_EMAIL)
+        requiredConfigs.add(config.STANDARDNOTES_MASTER_KEY)
+        requiredConfigs.add(config.STANDARDNOTES_SERVER_KEY)
+        requiredConfigs.add(config.STANDARDNOTES_URL)
+    }
 }

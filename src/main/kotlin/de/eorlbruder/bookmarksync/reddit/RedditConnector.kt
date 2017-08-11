@@ -3,7 +3,6 @@ package de.eorlbruder.bookmarksync.reddit
 import de.eorlbruder.bookmarksync.core.Connector
 import de.eorlbruder.bookmarksync.core.ConnectorTypes
 import de.eorlbruder.bookmarksync.core.Entry
-import de.eorlbruder.bookmarksync.core.Sysconfig
 import de.eorlbruder.bookmarksync.core.utils.ResponseUtils
 import khttp.get
 import khttp.post
@@ -16,10 +15,9 @@ class RedditConnector : Connector() {
 
     companion object : KLogging()
 
-    val config: Sysconfig = Sysconfig()
-
     init {
         logger.info("Starting to retrieve All Entries from Reddit")
+        checkRequiredConfig()
         val headers = HashMap(getAuthHeader())
         headers.put("User-Agent", "Bookmarksync/0.1 by EorlBruder")
         var response = get("${config.REDDIT_OAUTHURL}user/${config.REDDIT_USERNAME}/saved",
@@ -93,4 +91,13 @@ class RedditConnector : Connector() {
     }
 
     override val name: String = ConnectorTypes.REDDIT.value
+
+    override fun fillRequiredConfig() {
+        requiredConfigs.add(config.REDDIT_URL)
+        requiredConfigs.add(config.REDDIT_USERNAME)
+        requiredConfigs.add(config.REDDIT_PASSWORD)
+        requiredConfigs.add(config.REDDIT_OAUTHURL)
+        requiredConfigs.add(config.REDDIT_CLIENT_ID)
+        requiredConfigs.add(config.REDDIT_CLIENT_SECRET)
+    }
 }
