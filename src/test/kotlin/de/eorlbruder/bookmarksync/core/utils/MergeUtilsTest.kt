@@ -21,7 +21,7 @@ class MergeUtilsTest {
 
     @Test
     fun testChangedTitle() {
-        assertTrue(true)
+        assertTrue(false)
     }
 
     @Test

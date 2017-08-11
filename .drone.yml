@@ -5,3 +5,16 @@ pipeline:
       - GRADLE_USER_HOME=/.gradle
     commands:
       - ./gradlew test
+  notify:
+    email:
+      from: ${DRONE_ADMIN_MAIL}
+      host: ${DRONE_SMTP}
+      port: 587
+      username: ${DRONE_ADMIN_MAIL}
+      password: ${DRONE_MAIL_PW}
+      recipients:
+        - ${DRONE_ADMIN_MAIL}
+      when:
+        event: push # only run on merge into master
+        branch: [master]
+        status: [changed, failure]
