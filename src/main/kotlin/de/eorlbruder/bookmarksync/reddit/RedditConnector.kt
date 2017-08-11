@@ -5,7 +5,6 @@ import de.eorlbruder.bookmarksync.core.ConnectorTypes
 import de.eorlbruder.bookmarksync.core.Entry
 import de.eorlbruder.bookmarksync.core.Sysconfig
 import de.eorlbruder.bookmarksync.core.utils.ResponseUtils
-import javafx.util.converter.DoubleStringConverter
 import khttp.get
 import khttp.post
 import khttp.structures.authorization.BasicAuthorization
@@ -34,10 +33,10 @@ class RedditConnector : Connector() {
                 val params = HashMap<String, String>()
                 params.put("after", after)
                 params.put("count", entries.size.toString())
-                val rateLimitRemaining = response.headers.get("X-Ratelimit-Remaining")
+                val rateLimitRemaining = response.headers.get("X-Ratelimit-Remaining") as String
                 logger.debug("Processing Page $after with Status Code ${response.statusCode}, " +
                         "already fetched ${entries.size} Entries")
-                if (DoubleStringConverter().fromString(rateLimitRemaining) < 1) {
+                if (rateLimitRemaining.toDouble() < 1) {
                     val secondsTillReset = response.headers.get("X-Ratelimit-Reset")
                     Thread.sleep(Integer.parseInt(secondsTillReset) * 1000L)
                 }

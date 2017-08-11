@@ -2,6 +2,6 @@ pipeline:
   test:
     image: openjdk:8
     environment:
-      - GRADLE_USER_HOME=~/.gradle
+      - GRADLE_USER_HOME=/.gradle
     commands:
       - ./gradlew test
