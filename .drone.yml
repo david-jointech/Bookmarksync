@@ -15,13 +15,27 @@ pipeline:
     when:
       branch: master
       status: [ sucess ]
+  publish-docker:
+    when:
+      branch: master
+      status: [ sucess ]
+    image:
+        image: plugins/docker:1.12
+        username: ${DOCKER_USERNAME}
+        password: ${DOCKER_PASSWORD}
+        #email: ${DOCKER_EMAIL}
+        repo: build.registry.eorlbruder.de/bookmarksync
+        tags:
+          - latest
+        #dockerfile: ./Dockerfile
+        #context: ./
   notify:
     image: drillster/drone-email
     when:
-      status: [ changed, failure ]
+      branch: master
     host: ${DRONE_SMTP}
-    username: $DRONE_ADMIN_MAIL
-    from: $DRONE_ADMIN_MAIL
+    username: ${DRONE_ADMIN_MAIL}
+    from: ${DRONE_ADMIN_MAIL}
     recipients:
-     - $DRONE_ADMIN_MAIL
-    password: $DRONE_ADMIN_MAIL_PW
+     - ${DRONE_ADMIN_MAIL}
+    password: ${DRONE_ADMIN_MAIL_PW}
