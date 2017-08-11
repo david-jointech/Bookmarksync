@@ -19,9 +19,9 @@ pipeline:
     image: drillster/drone-email
     when:
       status: [ changed, failure ]
-    host: $$DRONE_SMTP
-    username: $$DRONE_ADMIN_MAIL
-    from: $$DRONE_ADMIN_MAIL
+    host: $DRONE_SMTP
+    username: $DRONE_ADMIN_MAIL
+    from: $DRONE_ADMIN_MAIL
     recipients:
-     - $$DRONE_ADMIN_MAIL
-    password: $$DRONE_ADMIN_MAIL_PW
+     - $DRONE_ADMIN_MAIL
+    password: $DRONE_ADMIN_MAIL_PW
