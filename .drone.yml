@@ -15,3 +15,10 @@ pipeline:
       - ${DRONE_ADMIN_MAIL}
     when:
       status: [ changed, failure ]
+    secrets:
+      host: drone_smtp
+      username: drone_admin_mail
+      from: drone_admin_mail
+      recipients:
+       - drone_admin_mail
+      password: drone_admin_mail_pw
