@@ -6,8 +6,9 @@ pipeline:
     commands:
       - ./gradlew build
       - echo $$DOCKER_USERNAME
-      - echo $$DOCKER_PASSWORD
+      - echo $DOCKER_PASSWORD
       - exit 1
+    secrets: [docker_username, docker_password]
   test:
     image: openjdk:8
     environment:
