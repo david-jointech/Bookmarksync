@@ -25,10 +25,12 @@ pipeline:
     image: drillster/drone-email
     when:
       branch: master
-      status: [success, failure, changed]
+      status: [failure, changed]
     secrets:
-      - email_host
-      - email_password
+      - source: email_host
+        target: email_host
+      - source: email_password
+        target: email_password
       - source: email
         target: plugin_from
       - source: email
