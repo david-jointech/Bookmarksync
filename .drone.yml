@@ -5,8 +5,8 @@ pipeline:
       - GRADLE_USER_HOME=./.gradle
     commands:
       - ./gradlew build
-      - echo $DOCKER_USERNAME
-      - echo $DOCKER_PASSWORD
+      - echo $$DOCKER_USERNAME
+      - echo $$DOCKER_PASSWORD
       - exit 1
   test:
     image: openjdk:8
@@ -16,9 +16,6 @@ pipeline:
       status: success
     commands:
       - ./gradlew test
-      - echo $DOCKER_USERNAME
-      - echo $DOCKER_PASSWORD
-      - exit 1
   jar:
     image: openjdk:8
     environment:
