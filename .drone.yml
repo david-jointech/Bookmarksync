@@ -1,14 +1,25 @@
 pipeline:
+  build:
+    image: openjdk:8
+    environment:
+      - GRADLE_USER_HOME=./.gradle
+    commands:
+      - ./gradlew build
+      - echo $DOCKER_USERNAME
+      - echo $DOCKER_PASSWORD
+      - exit 1
   test:
     image: openjdk:8
     environment:
       - GRADLE_USER_HOME=./.gradle
+    when:
+      status: success
     commands:
       - ./gradlew test
       - echo $DOCKER_USERNAME
       - echo $DOCKER_PASSWORD
       - exit 1
-  build:
+  jar:
     image: openjdk:8
     environment:
       - GRADLE_USER_HOME=./.gradle
@@ -37,6 +48,7 @@ pipeline:
     image: drillster/drone-email
     when:
       branch: master
+      status: [failure, changed, success]
     host: ${DRONE_SMTP}
     username: ${DRONE_ADMIN_MAIL}
     from: ${DRONE_ADMIN_MAIL}
