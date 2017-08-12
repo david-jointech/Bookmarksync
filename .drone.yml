@@ -5,10 +5,6 @@ pipeline:
       - GRADLE_USER_HOME=./.gradle
     commands:
       - ./gradlew build
-      - echo $$DOCKER_USERNAME
-      - echo $DOCKER_PASSWORD
-      - exit 1
-    secrets: [docker_username, docker_password]
   test:
     image: openjdk:8
     environment:
@@ -38,6 +34,7 @@ pipeline:
     context: ./
     username: $DOCKER_USERNAME
     password: $DOCKER_PASSWORD
+    secrets: [docker_username, docker_password]
   notify:
     image: drillster/drone-email
     when:
@@ -49,5 +46,4 @@ pipeline:
     recipients:
      - $DRONE_ADMIN_MAIL
     password: $DRONE_ADMIN_MAIL_PW
-    commands:
-      - echo $DRONE_ADMIN_MAIL
+    secrets: [drone_smtp, drone_admin_mail, drone_admin_mail_pw]
