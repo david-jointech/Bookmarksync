@@ -33,20 +33,18 @@ pipeline:
       - latest
     dockerfile: ./Dockerfile
     context: ./
-    username: $DOCKER_USERNAME
-    password: $DOCKER_PASSWORD
     secrets: [docker_username, docker_password]
   notify:
     image: drillster/drone-email
     when:
       branch: master
-      status: [failure, changed, success]
-    host: $DRONE_SMTP
-    username: $DRONE_ADMIN_MAIL
-    from: $DRONE_ADMIN_MAIL
-    recipients:
-      - $DRONE_ADMIN_MAIL
-    password: $DRONE_ADMIN_MAIL_PW
-    commands:
-      - echo $DRONE_SMTP
-    secrets: [drone_smtp, drone_admin_mail, drone_admin_mail_pw]
+      status: [success, failure, changed]
+    secrets:
+      - email_host
+      - email_password
+      - source: email
+        target: plugin_from
+      - source: email
+        target: email_username
+      - source: email
+        target: email_recipients
