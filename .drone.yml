@@ -25,7 +25,7 @@ pipeline:
     image: drillster/drone-email
     when:
       branch: master
-      status: [success, failure]
+      status: [success, failure, changed]
     secrets:
       - source: email_host
         target: email_host
