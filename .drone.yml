@@ -5,19 +5,6 @@ pipeline:
       - GRADLE_USER_HOME=./.gradle
     commands:
       - ./gradlew build
-  test:
-    image: openjdk:8
-    environment:
-      - GRADLE_USER_HOME=./.gradle
-    when:
-      status: success
-    commands:
-      - ./gradlew test
-  jar:
-    image: openjdk:8
-    environment:
-      - GRADLE_USER_HOME=./.gradle
-    commands:
       - ./gradlew fatJar
     when:
       branch: master

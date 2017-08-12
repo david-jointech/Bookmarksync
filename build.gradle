@@ -46,7 +46,7 @@ compileTestKotlin {
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
     manifest {
-        attributes 'Implementation-Title': 'Gradle Jar File Example',
+        attributes 'Implementation-Title': 'Bookmarksync',
                 'Implementation-Version': version,
                 'Main-Class': mainClassName
     }
