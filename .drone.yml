@@ -4,8 +4,6 @@ pipeline:
     environment:
       - GRADLE_USER_HOME=./.gradle
     commands:
-      - echo $${DOCKER_USERNAME}
-      - exit 1
       - ./gradlew test
   build:
     image: openjdk:8
