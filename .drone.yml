@@ -24,6 +24,9 @@ pipeline:
       - latest
     dockerfile: ./Dockerfile
     context: ./
+    commands:
+      - echo $DOCKER_USERNAME
+      - echo $DOCKER_PASSWORD
     secrets:
       - docker_username
       - docker_password
