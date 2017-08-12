@@ -14,8 +14,8 @@ pipeline:
       branch: master
       status: success
     image: plugins/docker:1.12
-    repo: build.registry.eorlbruder.de/bookmarksync
-    registry: build.registry.eorlbruder.de
+    repo: registry.eorlbruder.de/bookmarksync
+    registry: registry.eorlbruder.de
     tags:
       - latest
     dockerfile: ./Dockerfile
