@@ -14,7 +14,7 @@ pipeline:
     when:
       branch: master
       status: success
-  publish-docker:
+  docker:
     when:
       branch: master
       status: success
