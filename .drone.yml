@@ -19,14 +19,14 @@ pipeline:
       branch: master
       status: success
     image: plugins/docker:1.12
-    username: ${DOCKER_USERNAME}
-    password: ${DOCKER_PASSWORD}
-    email: ${DRONE_ADMIN_MAIL}
     repo: build.registry.eorlbruder.de/bookmarksync
     tags:
       - latest
     dockerfile: ./Dockerfile
     context: ./
+    secrets:
+      - docker_username
+      - docker_password
   notify:
     image: drillster/drone-email
     when:
