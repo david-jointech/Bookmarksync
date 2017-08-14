@@ -4,6 +4,7 @@ pipeline:
     environment:
       - GRADLE_USER_HOME=./.gradle
     commands:
+      - mv ./src/main/resources/log4j.properties.example src/main/resources/log4j.properties
       - ./gradlew build
       - ./gradlew fatJar
     when:
