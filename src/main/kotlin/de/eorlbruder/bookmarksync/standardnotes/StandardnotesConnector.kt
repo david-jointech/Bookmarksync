@@ -9,6 +9,7 @@ import de.eorlbruder.bookmarksync.wallabag.WallabagConnector
 import khttp.post
 import mu.KLogging
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import java.security.NoSuchAlgorithmException
 
@@ -77,8 +78,12 @@ class StandardnotesConnector : Connector() {
                             decryptedNotes.add(noteJson)
                         } else {
                             val tagJson = JSONObject(decryptedContent)
-                            val tagTitle = tagJson.get("title") as String
-                            decryptedTags.put(uuid, tagTitle)
+                            try {
+                                val tagTitle = tagJson.get("title") as String
+                                decryptedTags.put(uuid, tagTitle)
+                            } catch (e: JSONException) {
+                                logger.debug("Entry with uudi $uuid seems to be a deleted tag. Skipping.")
+                            }
                         }
                     } catch (e: NoSuchAlgorithmException) {
                         logger.warn("Entry with uuid $uuid has an unknown decrption Algorithm - skipping")
