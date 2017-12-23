@@ -34,6 +34,7 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
     compile 'com.natpryce:konfig:1.6.1.0'
     compile group: 'org.apache.commons', name: 'commons-text', version: '1.1'
+    compile group: 'org.twitter4j', name: 'twitter4j-core', version: '4.0.1'
 }
 
 compileKotlin {

@@ -44,7 +44,6 @@ class RedditConnector : Connector() {
                 break
             }
         }
-        entries.reverse()
     }
 
     fun pruneEntries(json: JSONObject) {

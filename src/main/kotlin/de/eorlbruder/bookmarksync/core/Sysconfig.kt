@@ -30,6 +30,11 @@ class Sysconfig {
     val REDDIT_CLIENT_ID: String
     val REDDIT_CLIENT_SECRET: String
 
+    val TWITTER_OAUTH_CONSUMER_KEY: String
+    val TWITTER_OAUTH_CONSUMER_SECRET: String
+    val TWITTER_OAUTH_ACCESSTOKEN: String
+    val TWITTER_OAUTH_ACCESSTOKEN_SECRET: String
+
     val sysconfig = Key("sysconfig", stringType)
     val env = Key("env", booleanType)
 
@@ -65,6 +70,11 @@ class Sysconfig {
         REDDIT_PASSWORD = config.getOrElse(reddit.password, "")
         REDDIT_CLIENT_ID = config.getOrElse(reddit.clientid, "")
         REDDIT_CLIENT_SECRET = config.getOrElse(reddit.clientsecret, "")
+
+        TWITTER_OAUTH_CONSUMER_KEY = config.getOrElse(twitter.oauthconsumerkey, "")
+        TWITTER_OAUTH_CONSUMER_SECRET = config.getOrElse(twitter.oauthconsumersecret, "")
+        TWITTER_OAUTH_ACCESSTOKEN = config.getOrElse(twitter.oauthaccesstoken, "")
+        TWITTER_OAUTH_ACCESSTOKEN_SECRET = config.getOrElse(twitter.oauthaccesstokensecret, "")
     }
 
 
@@ -108,5 +118,10 @@ class Sysconfig {
         val clientsecret by stringType
     }
 
-
+    object twitter : PropertyGroup() {
+        val oauthconsumerkey by stringType
+        val oauthconsumersecret by stringType
+        val oauthaccesstoken by stringType
+        val oauthaccesstokensecret by stringType
+    }
 }

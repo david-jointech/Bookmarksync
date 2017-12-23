@@ -39,7 +39,6 @@ class ShaarliConnector : Connector() {
             response = get(getEntriesUrlForOffset(offset), headers = getAuthHeader())
             logger.debug("Processing Page on $offset with Status Code ${response.statusCode}")
         }
-        entries.reverse()
     }
 
     private fun pruneEntry(entry: JSONObject) {

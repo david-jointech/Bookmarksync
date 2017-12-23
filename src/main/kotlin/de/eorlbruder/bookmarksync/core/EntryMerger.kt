@@ -7,8 +7,8 @@ class EntryMerger(sourceConnector: Connector, private val targetConnector: Conne
 
     companion object : KLogging()
 
-    val sourceEntries: List<Entry>
-    val targetEntries: List<Entry>
+    val sourceEntries: Set<Entry>
+    val targetEntries: Set<Entry>
 
     init {
         targetEntries = targetConnector.entries

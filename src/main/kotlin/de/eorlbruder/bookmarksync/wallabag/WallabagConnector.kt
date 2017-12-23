@@ -27,7 +27,6 @@ class WallabagConnector : Connector() {
             response = get(getEntriesUrlForPage(++i), headers = getAuthHeader())
             logger.debug("Processing Page $i with Status Code ${response.statusCode}")
         }
-        entries.reverse()
     }
 
 

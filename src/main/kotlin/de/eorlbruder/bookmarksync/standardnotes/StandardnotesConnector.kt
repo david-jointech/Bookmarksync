@@ -41,7 +41,6 @@ class StandardnotesConnector : Connector() {
                     data = jsonRequestData.toString())
             WallabagConnector.logger.debug("Processing Page with Status Code ${response.statusCode}")
         }
-        entries.reverse()
     }
 
     fun pruneAndExtractEntries(json: JSONObject) {
