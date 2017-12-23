@@ -3,6 +3,7 @@ package de.eorlbruder.bookmarksync.twitter
 import de.eorlbruder.bookmarksync.core.Connector
 import de.eorlbruder.bookmarksync.core.ConnectorTypes
 import de.eorlbruder.bookmarksync.core.Entry
+import de.eorlbruder.bookmarksync.reddit.RedditConnector
 import mu.KLogging
 import twitter4j.Paging
 import twitter4j.Status
@@ -14,6 +15,7 @@ class TwitterConnector : Connector() {
     companion object : KLogging()
 
     init {
+        logger.info("Starting to retrieve All Entries from Twitter")
         val cb = ConfigurationBuilder()
         cb.setDebugEnabled(true)
                 .setOAuthConsumerKey(config.TWITTER_OAUTH_CONSUMER_KEY)
