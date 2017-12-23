@@ -26,7 +26,7 @@ class TwitterConnector : Connector() {
         var i = 1
         do {
             val paging = Paging(i, 200)
-            logger.debug("Processing Page 1")
+            logger.debug("Processing Page $i")
             val favoritesList = favorites.getFavorites(paging)
             favoritesList.map { status ->
                 entries.add(statusToEntry(status))
